@@ -130,7 +130,7 @@
     <div class="top">
       <h1>AES-256-GCM</h1>
       <div class="right">
-        <button id="btnSafe" class="pillbtn">BẢO MẬT: TẮT</button>
+        <button id="btnSafe" class="pillbtn">BẢO MẬT : TẮT</button>
       </div>
     </div>
 
@@ -215,7 +215,7 @@
   }
 
   function applySafeMode(){
-    $("btnSafe").textContent = `BẢO MẬT AN TOÀN: ${SAFE_MODE ? "BẬT" : "TẮT"}`;
+    $("btnSafe").textContent = `BẢO MẬT : ${SAFE_MODE ? "BẬT" : "TẮT"}`;
 
     if (SAFE_MODE) {
       $("plain").value = "";
@@ -230,12 +230,12 @@
       $("plain").placeholder = "Văn bản gốc (đã ẩn)";
       $("out").placeholder = "Kết quả (đã ẩn)";
 
-      toast("Đã bật bảo mật an toàn");
+      toast("Đã bật bảo mật");
     } else {
       disableInSafeMode.forEach(id => setDisabled(id, false));
       $("plain").placeholder = "Văn bản gốc";
       $("out").placeholder = "Kết quả";
-      toast("Đã tắt bảo mật an toàn");
+      toast("Đã tắt bảo mật");
     }
   }
 
