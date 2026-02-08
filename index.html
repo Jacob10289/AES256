@@ -29,26 +29,25 @@
       backdrop-filter: blur(6px);
     }
 
+    /* Header: luôn cùng hàng, cân với pill */
     .top{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  margin-bottom:12px;
-  flex-wrap:nowrap;          /* luôn 1 hàng */
-}
-
-h1{
-  margin:0;
-  font-size:16px;
-  letter-spacing:.2px;
-  opacity:.92;
-  flex:1 1 auto;             /* co lại để nhường chỗ cho pill */
-  min-width:0;               /* quan trọng để ellipsis hoạt động */
-  white-space:nowrap;        /* 1 dòng */
-  overflow:hidden;
-  text-overflow:ellipsis;    /* thiếu chỗ thì ... thay vì rớt dòng */
-}
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
+      flex-wrap:nowrap;
+    }
+    h1{
+      margin:0;
+      font-size:16px;
+      letter-spacing:.2px;
+      opacity:.92;
+      flex:1 1 auto;
+      min-width:0;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
     }
     .right{
       flex:0 0 auto;
@@ -71,7 +70,7 @@ h1{
 
     .row{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
 
-    /* 2 nút ngang nhau, luôn đều */
+    /* 2 nút ngang nhau */
     .two{
       display:grid;
       grid-template-columns:1fr 1fr;
@@ -117,6 +116,8 @@ h1{
       filter:saturate(.8);
     }
 
+    /* Mobile */
+    @media (max-width: 420px){
       input,textarea{min-width:0}
       .mini{min-width:0;flex:1}
       .pwbtn{min-width:110px}
