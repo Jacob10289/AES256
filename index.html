@@ -39,8 +39,8 @@
 
     <div class="hint">
       <div><b>Format token:</b> <code>v2.&lt;salt&gt;.&lt;nonce&gt;.&lt;ciphertext&gt;.&lt;tag&gt;</code> (Base64URL, bỏ "=")</div>
-      <div class="danger">Quan trọng: PASS phải mạnh (dài + khó đoán). Token public vẫn OK vì không có PASS thì không giải được.</div>
-      <div>PBKDF2 iterations: <span id="it"></span> (có thể tăng/giảm theo máy).</div>
+      <div class="danger">PASS phải mạnh. Token public vẫn OK vì không có PASS thì không giải được.</div>
+      <div>PBKDF2 iterations: <span id="it"></span></div>
     </div>
   </div>
 
@@ -63,11 +63,10 @@
   const enc = new TextEncoder();
   const dec = new TextDecoder();
 
-  const PBKDF2_ITERS = 200000;
+  const PBKDF2_ITERS = 200000; // nếu thấy chậm trên iPhone, giảm xuống 100000
   $("it").textContent = PBKDF2_ITERS.toLocaleString("vi-VN");
 
   async function deriveAesKeyFromPass(pass, saltU8) {
-  
     const passKey = await crypto.subtle.importKey(
       "raw",
       enc.encode(pass),
@@ -77,12 +76,7 @@
     );
 
     return crypto.subtle.deriveKey(
-      {
-        name: "PBKDF2",
-        salt: saltU8,
-        iterations: PBKDF2_ITERS,
-        hash: "SHA-256"
-      },
+      { name: "PBKDF2", salt: saltU8, iterations: PBKDF2_ITERS, hash: "SHA-256" },
       passKey,
       { name: "AES-GCM", length: 256 },
       false,
@@ -95,10 +89,10 @@
       const plain = $("plain").value;
       const pass = $("pass").value;
 
-      if (!pass || pass.length < 10) throw new Error("PASS nên >= 10 ký tự (khuyến nghị mạnh hơn).");
+      if (!pass || pass.length < 10) throw new Error("PASS nên >= 10 ký tự (khuyến nghị 16+).");
 
-      const salt = crypto.getRandomValues(new Uint8Array(16)); // random salt
-      const nonce = crypto.getRandomValues(new Uint8Array(12)); // GCM nonce
+      const salt = crypto.getRandomValues(new Uint8Array(16));
+      const nonce = crypto.getRandomValues(new Uint8Array(12));
 
       const aesKey = await deriveAesKeyFromPass(pass, salt);
 
