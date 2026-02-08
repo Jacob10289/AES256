@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>AES-256-GCM (v3)</title>
+  <title>Mã hoá AES-256-GCM (v3)</title>
   <style>
     :root{
       --bg:#0b0b0f;
@@ -48,10 +48,8 @@
     textarea{width:100%;min-height:140px;resize:vertical;line-height:1.35}
     button{cursor:pointer;user-select:none}
     button:active{transform:translateY(1px)}
-    .mini{flex:0;min-width:170px}
-    .iconbtn{flex:0;min-width:140px}
-    .hint{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.45}
-    .split{height:1px;background:var(--line);margin:14px 0}
+    .mini{flex:0;min-width:190px}
+    .iconbtn{flex:0;min-width:150px}
     .toast{
       position:fixed;left:50%;bottom:28px;transform:translateX(-50%);
       background:rgba(0,0,0,.78);
@@ -62,7 +60,6 @@
       box-shadow:0 12px 26px var(--shadow);
     }
     .toast.show{opacity:1}
-    .danger{color:rgba(245,245,247,.82)}
     .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
     .pill{
       padding:8px 10px;border-radius:999px;border:1px solid var(--line);
@@ -71,47 +68,41 @@
     }
     .pwwrap{display:flex;gap:10px;flex:1;min-width:260px}
     .pwwrap input{flex:1;min-width:0}
-    .pwbtn{flex:0;min-width:110px}
+    .pwbtn{flex:0;min-width:120px}
   </style>
 </head>
 <body>
   <div class="box">
     <div class="top">
-      <h1>AES-256-GCM (v3)</h1>
+      <h1>Mã hoá AES-256-GCM (v3)</h1>
       <div class="right">
-        <span id="status" class="pill">READY</span>
-        <button id="btnStealth" class="iconbtn">STEALTH: OFF</button>
+        <span id="status" class="pill">SẴN SÀNG</span>
+        <button id="btnStealth" class="iconbtn">CHẾ ĐỘ KÍN: TẮT</button>
       </div>
     </div>
 
     <div class="row">
-      <input id="plain" placeholder="PLAINTEXT" value="" autocomplete="off" />
+      <input id="plain" placeholder="Văn bản gốc (plaintext)" value="" autocomplete="off" />
       <input id="iters" class="mini" type="number" value="600000" min="100000" step="100000" inputmode="numeric" />
     </div>
 
     <div class="row">
       <div class="pwwrap">
-        <input id="pass" type="password" placeholder="PASS" autocomplete="new-password" />
-        <button id="btnTogglePass" class="pwbtn">SHOW</button>
+        <input id="pass" type="password" placeholder="Mật khẩu (PASS)" autocomplete="new-password" />
+        <button id="btnTogglePass" class="pwbtn">HIỆN</button>
       </div>
-      <button id="btnEnc" class="iconbtn">ENCRYPT</button>
-      <button id="btnDec" class="iconbtn">DECRYPT</button>
+      <button id="btnEnc" class="iconbtn">MÃ HOÁ</button>
+      <button id="btnDec" class="iconbtn">GIẢI MÃ</button>
     </div>
 
     <div class="row">
-      <textarea id="token" spellcheck="false" placeholder="TOKEN"></textarea>
+      <textarea id="token" spellcheck="false" placeholder="Token mã hoá"></textarea>
     </div>
 
     <div class="row">
-      <button id="btnCopy" class="iconbtn">COPY</button>
-      <button id="btnClear" class="iconbtn">CLEAR</button>
-      <input id="out" placeholder="OUTPUT" autocomplete="off" />
-    </div>
-
-    <div class="split"></div>
-
-    <div class="hint">
-      <div class="danger"><code id="fmt">v3.&lt;iters&gt;.&lt;salt&gt;.&lt;nonce&gt;.&lt;ciphertext&gt;.&lt;tag&gt;</code></div>
+      <button id="btnCopy" class="iconbtn">SAO CHÉP TOKEN</button>
+      <button id="btnClear" class="iconbtn">XOÁ NHANH</button>
+      <input id="out" placeholder="Kết quả" autocomplete="off" />
     </div>
   </div>
 
@@ -123,7 +114,6 @@
   const enc = new TextEncoder();
   const dec = new TextDecoder();
 
-  // Base64URL helpers
   const b64url = (u8) =>
     btoa(String.fromCharCode(...u8))
       .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
@@ -154,20 +144,20 @@
   let STEALTH = false;
 
   function applyStealth(){
-    $("btnStealth").textContent = `STEALTH: ${STEALTH ? "ON" : "OFF"}`;
+    $("btnStealth").textContent = `CHẾ ĐỘ KÍN: ${STEALTH ? "BẬT" : "TẮT"}`;
     if (STEALTH) {
       $("plain").value = "";
       $("out").value = "";
       $("pass").value = "";
-      $("plain").placeholder = "PLAINTEXT (HIDDEN MODE)";
-      $("out").placeholder = "OUTPUT (HIDDEN MODE)";
-      setStatus("STEALTH");
-      toast("STEALTH ON");
+      $("plain").placeholder = "Văn bản gốc (ẩn)";
+      $("out").placeholder = "Kết quả (ẩn)";
+      setStatus("CHẾ ĐỘ KÍN");
+      toast("Đã bật chế độ kín");
     } else {
-      $("plain").placeholder = "PLAINTEXT";
-      $("out").placeholder = "OUTPUT";
-      setStatus("READY");
-      toast("STEALTH OFF");
+      $("plain").placeholder = "Văn bản gốc (plaintext)";
+      $("out").placeholder = "Kết quả";
+      setStatus("SẴN SÀNG");
+      toast("Đã tắt chế độ kín");
     }
   }
 
@@ -191,7 +181,7 @@
 
   function getPlaintextForEncrypt(){
     if (!STEALTH) return $("plain").value;
-    const v = prompt("PLAINTEXT:", "");
+    const v = prompt("Nhập văn bản gốc để mã hoá:", "");
     return (v ?? "").trim();
   }
 
@@ -215,13 +205,13 @@
 
   async function encrypt() {
     try {
-      setStatus("WORKING");
+      setStatus("ĐANG XỬ LÝ");
 
       const plain = getPlaintextForEncrypt();
       const pass = $("pass").value;
 
-      if (!plain) throw new Error("NO PLAINTEXT");
-      if (!pass || pass.length < 10) throw new Error("WEAK PASS");
+      if (!plain) throw new Error("Bạn chưa nhập văn bản gốc.");
+      if (!pass || pass.length < 10) throw new Error("Mật khẩu quá yếu.");
 
       const iters = getIters();
       const salt = crypto.getRandomValues(new Uint8Array(16));
@@ -243,32 +233,32 @@
       setPlaintextAfterEncrypt();
       clearSensitive();
 
-      setStatus("ENCRYPTED");
-      toast("ENCRYPTED");
+      setStatus("ĐÃ MÃ HOÁ");
+      toast("Đã mã hoá");
     } catch (e) {
-      setStatus("ERROR");
-      toast("ERROR");
-      if (!STEALTH) $("out").value = "Encrypt failed: " + (e?.message || e);
+      setStatus("LỖI");
+      toast("Có lỗi");
+      if (!STEALTH) $("out").value = "Mã hoá thất bại: " + (e?.message || e);
     } finally {
-      setTimeout(()=>{ if (!STEALTH) setStatus("READY"); }, 900);
+      setTimeout(()=>{ if (!STEALTH) setStatus("SẴN SÀNG"); }, 900);
     }
   }
 
   async function decrypt() {
     try {
-      setStatus("WORKING");
+      setStatus("ĐANG XỬ LÝ");
 
       const pass = $("pass").value.trim();
       const token = $("token").value.trim();
 
-      if (!pass) throw new Error("NO PASS");
-      if (!token) throw new Error("NO TOKEN");
+      if (!pass) throw new Error("Bạn chưa nhập mật khẩu.");
+      if (!token) throw new Error("Bạn chưa dán token.");
 
       const parts = token.split(".");
-      if (parts.length !== 6 || parts[0] !== "v3") throw new Error("BAD TOKEN");
+      if (parts.length !== 6 || parts[0] !== "v3") throw new Error("Token không đúng định dạng.");
 
       const iters = parseInt(parts[1], 10);
-      if (!Number.isFinite(iters) || iters < 100000) throw new Error("BAD ITERS");
+      if (!Number.isFinite(iters) || iters < 100000) throw new Error("Iterations trong token không hợp lệ.");
 
       const salt = b64urlToU8(parts[2]);
       const nonce = b64urlToU8(parts[3]);
@@ -291,45 +281,45 @@
       setOutputAfterDecrypt(text);
       clearSensitive();
 
-      setStatus("DECRYPTED");
-      toast("DECRYPTED");
+      setStatus("ĐÃ GIẢI MÃ");
+      toast("Đã giải mã");
     } catch (e) {
-      setStatus("ERROR");
-      toast("ERROR");
-      if (!STEALTH) $("out").value = "Decrypt failed: " + (e?.message || e);
+      setStatus("LỖI");
+      toast("Có lỗi");
+      if (!STEALTH) $("out").value = "Giải mã thất bại: " + (e?.message || e);
     } finally {
-      setTimeout(()=>{ if (!STEALTH) setStatus("READY"); }, 900);
+      setTimeout(()=>{ if (!STEALTH) setStatus("SẴN SÀNG"); }, 900);
     }
   }
 
   async function copyToken(){
     const token = $("token").value.trim();
-    if (!token) return toast("NO TOKEN");
+    if (!token) return toast("Chưa có token");
     try{
       await navigator.clipboard.writeText(token);
-      toast("COPIED");
+      toast("Đã sao chép");
     }catch{
       $("token").focus();
       $("token").select();
       document.execCommand("copy");
-      toast("COPIED");
+      toast("Đã sao chép");
     }
   }
 
   function clearAll(){
-    $("plain").value = STEALTH ? "" : $("plain").value;
+    if (STEALTH) $("plain").value = "";
     $("pass").value = "";
     $("token").value = "";
     $("out").value = "";
-    setStatus(STEALTH ? "STEALTH" : "READY");
-    toast("CLEARED");
+    setStatus(STEALTH ? "CHẾ ĐỘ KÍN" : "SẴN SÀNG");
+    toast("Đã xoá");
   }
 
   function togglePass(){
     const p = $("pass");
     const isPw = p.type === "password";
     p.type = isPw ? "text" : "password";
-    $("btnTogglePass").textContent = isPw ? "HIDE" : "SHOW";
+    $("btnTogglePass").textContent = isPw ? "ẨN" : "HIỆN";
   }
 
   $("btnEnc").addEventListener("click", encrypt);
@@ -337,21 +327,9 @@
   $("btnCopy").addEventListener("click", copyToken);
   $("btnClear").addEventListener("click", clearAll);
   $("btnTogglePass").addEventListener("click", togglePass);
+  $("btnStealth").addEventListener("click", () => { STEALTH = !STEALTH; applyStealth(); });
 
-  $("btnStealth").addEventListener("click", () => {
-    STEALTH = !STEALTH;
-    applyStealth();
-  });
-
-  // Hotkeys: Ctrl/⌘+Enter encrypt, Ctrl/⌘+Shift+Enter decrypt
-  document.addEventListener("keydown", (e) => {
-    const mod = e.ctrlKey || e.metaKey;
-    if (!mod) return;
-    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); encrypt(); }
-    if (e.key === "Enter" && e.shiftKey) { e.preventDefault(); decrypt(); }
-  });
-
-  setStatus("READY");
+  setStatus("SẴN SÀNG");
 </script>
 </body>
 </html>
