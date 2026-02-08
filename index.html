@@ -70,7 +70,7 @@
     .pwwrap{display:flex;gap:10px;flex:1;min-width:260px}
     .pwwrap input{flex:1;min-width:0}
     .pwbtn{flex:0;min-width:120px}
-    /* Disabled look */
+    
     .disabled{
       opacity:.45;
       pointer-events:none;
@@ -145,14 +145,12 @@
     setTimeout(()=>t.classList.remove("show"), 900);
   }
 
-  // "Bảo mật an toàn" == STEALTH mode
   let SAFE_MODE = false;
 
-  // Elements to disable when SAFE_MODE is ON (as requested)
   const disableInSafeMode = [
-    "plain",          // Văn bản gốc
-    "btnTogglePass",  // nút Hiện/Ẩn
-    "out"             // output field (keep clean)
+    "plain",          
+    "btnTogglePass",  
+    "out"             
   ];
 
   function setDisabled(id, on){
@@ -167,25 +165,22 @@
     $("btnSafe").textContent = `BẢO MẬT AN TOÀN: ${SAFE_MODE ? "BẬT" : "TẮT"}`;
 
     if (SAFE_MODE) {
-      // Clear sensitive fields
+      
       $("plain").value = "";
       $("out").value = "";
       $("pass").value = "";
 
-      // Force pass hidden
       $("pass").type = "password";
       $("btnTogglePass").textContent = "HIỆN";
 
-      // Disable requested controls
       disableInSafeMode.forEach(id => setDisabled(id, true));
 
-      // Update placeholders for clarity (still Vietnamese)
       $("plain").placeholder = "Văn bản gốc (đã ẩn)";
       $("out").placeholder = "Kết quả (đã ẩn)";
 
       toast("Đã bật bảo mật an toàn");
     } else {
-      // Re-enable controls
+      
       disableInSafeMode.forEach(id => setDisabled(id, false));
 
       $("plain").placeholder = "Văn bản gốc";
@@ -330,7 +325,7 @@
   }
 
   function togglePass(){
-    if (SAFE_MODE) return; // disabled anyway, but safe-guard
+    if (SAFE_MODE) return; 
     const p = $("pass");
     const isPw = p.type === "password";
     p.type = isPw ? "text" : "password";
@@ -348,7 +343,6 @@
     applySafeMode();
   });
 
-  // Init
   applySafeMode();
 </script>
 </body>
