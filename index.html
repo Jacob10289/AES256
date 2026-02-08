@@ -31,15 +31,19 @@
     .top{
       display:flex;align-items:center;justify-content:space-between;
       gap:12px;margin-bottom:12px;
+      flex-wrap:wrap; /* chống chồng chữ trên mobile */
     }
     h1{
       margin:0;
       font-size:16px;
       letter-spacing:.2px;
       opacity:.92;
-      white-space:nowrap; /* 1) Giữ tiêu đề 1 dòng */
+      white-space:nowrap;
+      flex:1;
+      min-width:0;
     }
     .row{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+    .row.two > *{flex:1;min-width:0} /* 2 nút ngang nhau */
     input,textarea,button{
       border-radius:12px;
       border:1px solid var(--line);
@@ -54,7 +58,6 @@
     button{cursor:pointer;user-select:none}
     button:active{transform:translateY(1px)}
     .mini{flex:0;min-width:190px}
-    .iconbtn{flex:1;min-width:0} /* 3&4) nút nằm ngang, chia đều */
     .toast{
       position:fixed;left:50%;bottom:28px;transform:translateX(-50%);
       background:rgba(0,0,0,.78);
@@ -65,7 +68,7 @@
       box-shadow:0 12px 26px var(--shadow);
     }
     .toast.show{opacity:1}
-    .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+    .right{display:flex;gap:8px;align-items:center;justify-content:flex-end}
     .pillbtn{
       padding:8px 12px;border-radius:999px;border:1px solid var(--line);
       background:rgba(0,0,0,.18);
@@ -74,14 +77,20 @@
       cursor:pointer;
       white-space:nowrap;
     }
-    .pwwrap{display:flex;gap:10px;flex:1;min-width:260px}
+    .pwwrap{display:flex;gap:10px;flex:1;min-width:240px}
     .pwwrap input{flex:1;min-width:0}
     .pwbtn{flex:0;min-width:120px}
-
     .disabled{
       opacity:.45;
       pointer-events:none;
       filter:saturate(.8);
+    }
+
+    /* Mobile: giữ layout cân */
+    @media (max-width: 420px){
+      input,textarea{min-width:0}
+      .mini{min-width:0;flex:1}
+      .pwbtn{min-width:110px}
     }
   </style>
 </head>
@@ -96,7 +105,9 @@
 
     <div class="row">
       <input id="plain" placeholder="Văn bản gốc" value="" autocomplete="off" />
-      <!-- 2) Mặc định 100000 -->
+    </div>
+
+    <div class="row">
       <input id="iters" class="mini" type="number" value="100000" min="100000" step="100000" inputmode="numeric" />
     </div>
 
@@ -105,19 +116,25 @@
         <input id="pass" type="password" placeholder="Mật khẩu" autocomplete="new-password" />
         <button id="btnTogglePass" class="pwbtn">HIỆN</button>
       </div>
-      <!-- 3) 2 nút nằm ngang nhau -->
-      <button id="btnEnc" class="iconbtn">MÃ HOÁ</button>
-      <button id="btnDec" class="iconbtn">GIẢI MÃ</button>
+    </div>
+
+    <!-- MÃ HOÁ + GIẢI MÃ ngang nhau -->
+    <div class="row two">
+      <button id="btnEnc">MÃ HOÁ</button>
+      <button id="btnDec">GIẢI MÃ</button>
     </div>
 
     <div class="row">
       <textarea id="token" spellcheck="false" placeholder="Token mã hoá"></textarea>
     </div>
 
-    <!-- 4) 2 nút ngang nhau + đổi tên -->
+    <!-- SAO CHÉP + XOÁ ngang nhau -->
+    <div class="row two">
+      <button id="btnCopy">SAO CHÉP</button>
+      <button id="btnClear">XOÁ</button>
+    </div>
+
     <div class="row">
-      <button id="btnCopy" class="iconbtn">SAO CHÉP</button>
-      <button id="btnClear" class="iconbtn">XOÁ</button>
       <input id="out" placeholder="Kết quả" autocomplete="off" />
     </div>
   </div>
@@ -143,7 +160,6 @@
     return u8;
   };
 
-  // 2) update default fallback to 100000
   const getIters = () => {
     const n = parseInt($("iters").value || "100000", 10);
     return Number.isFinite(n) ? Math.max(100000, n) : 100000;
