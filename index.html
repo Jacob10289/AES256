@@ -8,7 +8,6 @@
     :root{
       --bg:#0b0b0f;
       --fg:#f5f5f7;
-      --muted:rgba(245,245,247,.72);
       --line:rgba(255,255,255,.12);
       --panel:rgba(255,255,255,.04);
       --field:rgba(0,0,0,.25);
@@ -49,7 +48,7 @@
     button{cursor:pointer;user-select:none}
     button:active{transform:translateY(1px)}
     .mini{flex:0;min-width:190px}
-    .iconbtn{flex:0;min-width:150px}
+    .iconbtn{flex:0;min-width:170px}
     .toast{
       position:fixed;left:50%;bottom:28px;transform:translateX(-50%);
       background:rgba(0,0,0,.78);
@@ -61,14 +60,22 @@
     }
     .toast.show{opacity:1}
     .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
-    .pill{
-      padding:8px 10px;border-radius:999px;border:1px solid var(--line);
-      background:rgba(0,0,0,.18);color:rgba(245,245,247,.85);
+    .pillbtn{
+      padding:8px 12px;border-radius:999px;border:1px solid var(--line);
+      background:rgba(0,0,0,.18);
+      color:rgba(245,245,247,.9);
       font-size:12px;
+      cursor:pointer;
     }
     .pwwrap{display:flex;gap:10px;flex:1;min-width:260px}
     .pwwrap input{flex:1;min-width:0}
     .pwbtn{flex:0;min-width:120px}
+    /* Disabled look */
+    .disabled{
+      opacity:.45;
+      pointer-events:none;
+      filter:saturate(.8);
+    }
   </style>
 </head>
 <body>
@@ -76,8 +83,7 @@
     <div class="top">
       <h1>Mã hoá AES-256-GCM (v3)</h1>
       <div class="right">
-        <span id="status" class="pill">SẴN SÀNG</span>
-        <button id="btnStealth" class="iconbtn">CHẾ ĐỘ KÍN: TẮT</button>
+        <button id="btnSafe" class="pillbtn">BẢO MẬT AN TOÀN: TẮT</button>
       </div>
     </div>
 
@@ -132,8 +138,6 @@
     return Number.isFinite(n) ? Math.max(100000, n) : 600000;
   };
 
-  const setStatus = (s) => { $("status").textContent = s; };
-
   function toast(msg){
     const t = $("toast");
     t.textContent = msg;
@@ -141,23 +145,53 @@
     setTimeout(()=>t.classList.remove("show"), 900);
   }
 
-  let STEALTH = false;
+  // "Bảo mật an toàn" == STEALTH mode
+  let SAFE_MODE = false;
 
-  function applyStealth(){
-    $("btnStealth").textContent = `CHẾ ĐỘ KÍN: ${STEALTH ? "BẬT" : "TẮT"}`;
-    if (STEALTH) {
+  // Elements to disable when SAFE_MODE is ON (as requested)
+  const disableInSafeMode = [
+    "plain",          // Văn bản gốc
+    "btnTogglePass",  // nút Hiện/Ẩn
+    "out"             // output field (keep clean)
+  ];
+
+  function setDisabled(id, on){
+    const el = $(id);
+    if (!el) return;
+    el.disabled = !!on;
+    if (on) el.classList.add("disabled");
+    else el.classList.remove("disabled");
+  }
+
+  function applySafeMode(){
+    $("btnSafe").textContent = `BẢO MẬT AN TOÀN: ${SAFE_MODE ? "BẬT" : "TẮT"}`;
+
+    if (SAFE_MODE) {
+      // Clear sensitive fields
       $("plain").value = "";
       $("out").value = "";
       $("pass").value = "";
-      $("plain").placeholder = "Văn bản gốc (ẩn)";
-      $("out").placeholder = "Kết quả (ẩn)";
-      setStatus("CHẾ ĐỘ KÍN");
-      toast("Đã bật chế độ kín");
+
+      // Force pass hidden
+      $("pass").type = "password";
+      $("btnTogglePass").textContent = "HIỆN";
+
+      // Disable requested controls
+      disableInSafeMode.forEach(id => setDisabled(id, true));
+
+      // Update placeholders for clarity (still Vietnamese)
+      $("plain").placeholder = "Văn bản gốc (đã ẩn)";
+      $("out").placeholder = "Kết quả (đã ẩn)";
+
+      toast("Đã bật bảo mật an toàn");
     } else {
+      // Re-enable controls
+      disableInSafeMode.forEach(id => setDisabled(id, false));
+
       $("plain").placeholder = "Văn bản gốc (plaintext)";
       $("out").placeholder = "Kết quả";
-      setStatus("SẴN SÀNG");
-      toast("Đã tắt chế độ kín");
+
+      toast("Đã tắt bảo mật an toàn");
     }
   }
 
@@ -180,17 +214,13 @@
   }
 
   function getPlaintextForEncrypt(){
-    if (!STEALTH) return $("plain").value;
+    if (!SAFE_MODE) return $("plain").value;
     const v = prompt("Nhập văn bản gốc để mã hoá:", "");
     return (v ?? "").trim();
   }
 
-  function setPlaintextAfterEncrypt(){
-    if (STEALTH) $("plain").value = "";
-  }
-
   function setOutputAfterDecrypt(text){
-    if (STEALTH) {
+    if (SAFE_MODE) {
       $("out").value = "";
       alert(text);
     } else {
@@ -200,13 +230,11 @@
 
   function clearSensitive(){
     $("pass").value = "";
-    if (STEALTH) $("plain").value = "";
+    if (SAFE_MODE) $("plain").value = "";
   }
 
   async function encrypt() {
     try {
-      setStatus("ĐANG XỬ LÝ");
-
       const plain = getPlaintextForEncrypt();
       const pass = $("pass").value;
 
@@ -230,24 +258,16 @@
 
       $("token").value = `v3.${iters}.${b64url(salt)}.${b64url(nonce)}.${b64url(ciphertext)}.${b64url(tag)}`;
 
-      setPlaintextAfterEncrypt();
       clearSensitive();
-
-      setStatus("ĐÃ MÃ HOÁ");
       toast("Đã mã hoá");
     } catch (e) {
-      setStatus("LỖI");
       toast("Có lỗi");
-      if (!STEALTH) $("out").value = "Mã hoá thất bại: " + (e?.message || e);
-    } finally {
-      setTimeout(()=>{ if (!STEALTH) setStatus("SẴN SÀNG"); }, 900);
+      if (!SAFE_MODE) $("out").value = "Mã hoá thất bại: " + (e?.message || e);
     }
   }
 
   async function decrypt() {
     try {
-      setStatus("ĐANG XỬ LÝ");
-
       const pass = $("pass").value.trim();
       const token = $("token").value.trim();
 
@@ -280,15 +300,10 @@
       const text = dec.decode(pt);
       setOutputAfterDecrypt(text);
       clearSensitive();
-
-      setStatus("ĐÃ GIẢI MÃ");
       toast("Đã giải mã");
     } catch (e) {
-      setStatus("LỖI");
       toast("Có lỗi");
-      if (!STEALTH) $("out").value = "Giải mã thất bại: " + (e?.message || e);
-    } finally {
-      setTimeout(()=>{ if (!STEALTH) setStatus("SẴN SÀNG"); }, 900);
+      if (!SAFE_MODE) $("out").value = "Giải mã thất bại: " + (e?.message || e);
     }
   }
 
@@ -307,15 +322,15 @@
   }
 
   function clearAll(){
-    if (STEALTH) $("plain").value = "";
+    if (SAFE_MODE) $("plain").value = "";
     $("pass").value = "";
     $("token").value = "";
     $("out").value = "";
-    setStatus(STEALTH ? "CHẾ ĐỘ KÍN" : "SẴN SÀNG");
     toast("Đã xoá");
   }
 
   function togglePass(){
+    if (SAFE_MODE) return; // disabled anyway, but safe-guard
     const p = $("pass");
     const isPw = p.type === "password";
     p.type = isPw ? "text" : "password";
@@ -327,9 +342,14 @@
   $("btnCopy").addEventListener("click", copyToken);
   $("btnClear").addEventListener("click", clearAll);
   $("btnTogglePass").addEventListener("click", togglePass);
-  $("btnStealth").addEventListener("click", () => { STEALTH = !STEALTH; applyStealth(); });
 
-  setStatus("SẴN SÀNG");
+  $("btnSafe").addEventListener("click", () => {
+    SAFE_MODE = !SAFE_MODE;
+    applySafeMode();
+  });
+
+  // Init
+  applySafeMode();
 </script>
 </body>
 </html>
