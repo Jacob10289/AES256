@@ -10,17 +10,10 @@
       --bg1:#070a12;
       --bg2:#0a1020;
       --fg:#f5f7ff;
-      --muted:rgba(245,247,255,.72);
       --line:rgba(255,255,255,.12);
-      --line2:rgba(255,255,255,.18);
       --panel:rgba(255,255,255,.045);
       --field:rgba(0,0,0,.30);
       --shadow:rgba(0,0,0,.70);
-      --glow:rgba(120,160,255,.25);
-      --glow2:rgba(90,220,255,.18);
-      --ok:rgba(110,255,210,.20);
-      --bad:rgba(255,120,140,.20);
-      --radius:16px;
       --radius2:12px;
     }
 
@@ -63,8 +56,8 @@
         radial-gradient(1px 1px at 46% 84%, rgba(255,255,255,.55), transparent 55%),
         radial-gradient(1px 1px at 92% 28%, rgba(255,255,255,.55), transparent 55%);
       filter: drop-shadow(0 0 10px rgba(180,210,255,.08));
-      opacity:.55;
-      animation: drift 18s linear infinite, twinkle 3.6s ease-in-out infinite;
+      opacity:.50;
+      animation: drift 18s linear infinite, twinkle 3.8s ease-in-out infinite;
       transform:translate3d(0,0,0);
     }
 
@@ -75,56 +68,47 @@
         radial-gradient(800px 600px at 80% 35%, rgba(90,220,255,.08), transparent 55%),
         radial-gradient(700px 520px at 55% 85%, rgba(160,120,255,.06), transparent 60%);
       filter: blur(18px);
-      opacity:.75;
+      opacity:.70;
       animation: pulse 7.5s ease-in-out infinite;
     }
 
-    .meteors{
+    .rain{
       position:absolute; inset:0;
-      opacity:.70;
-      filter: drop-shadow(0 0 12px rgba(140,190,255,.25));
-    }
-    .meteor{
-      position:absolute;
-      width:240px;
-      height:2px;
-      background: linear-gradient(90deg, rgba(255,255,255,0), rgba(210,230,255,.95), rgba(130,170,255,.05));
-      border-radius:999px;
-      transform:rotate(-18deg);
-      opacity:0;
-      animation: meteorFly var(--dur) linear var(--delay) infinite;
-    }
-    .meteor::after{
-      content:"";
-      position:absolute;
-      right:18px;
-      top:50%;
-      width:10px;
-      height:10px;
-      transform:translateY(-50%);
-      background: radial-gradient(circle, rgba(255,255,255,.95), rgba(170,210,255,.30), rgba(0,0,0,0));
-      border-radius:50%;
-      filter: blur(.2px);
+      opacity:.55;
+      filter: drop-shadow(0 0 8px rgba(140,190,255,.12));
+      transform: translateZ(0);
     }
 
-    @keyframes meteorFly{
-      0%{opacity:0; transform: translate3d(-20vw,-10vh,0) rotate(-18deg)}
-      8%{opacity:.9}
-      18%{opacity:.75}
-      30%{opacity:0; transform: translate3d(130vw,90vh,0) rotate(-18deg)}
-      100%{opacity:0; transform: translate3d(130vw,90vh,0) rotate(-18deg)}
+    .drop{
+      position:absolute;
+      top:-12vh;
+      width:1px;
+      height:12vh;
+      background: linear-gradient(180deg, rgba(255,255,255,0), rgba(160,200,255,.55), rgba(255,255,255,0));
+      opacity:.0;
+      animation: fall var(--dur) linear var(--delay) infinite;
+      transform: translateZ(0);
+      will-change: transform, opacity;
     }
+
+    @keyframes fall{
+      0%{transform: translate3d(0,-12vh,0); opacity:0}
+      10%{opacity:.55}
+      90%{opacity:.55}
+      100%{transform: translate3d(14vw,125vh,0); opacity:0}
+    }
+
     @keyframes drift{
       0%{transform: translate3d(0,0,0) scale(1)}
       100%{transform: translate3d(-3%,2%,0) scale(1.02)}
     }
     @keyframes twinkle{
-      0%,100%{opacity:.46}
-      50%{opacity:.65}
+      0%,100%{opacity:.42}
+      50%{opacity:.62}
     }
     @keyframes pulse{
-      0%,100%{opacity:.70; transform:translate3d(0,0,0)}
-      50%{opacity:.85; transform:translate3d(1.2%, -1%, 0)}
+      0%,100%{opacity:.68; transform:translate3d(0,0,0)}
+      50%{opacity:.84; transform:translate3d(1.2%, -1%, 0)}
     }
 
     .wrap{
@@ -160,14 +144,11 @@
       animation: panelGlow 9s ease-in-out infinite;
     }
     @keyframes panelGlow{
-      0%,100%{transform:translate3d(0,0,0); opacity:.52}
+      0%,100%{transform:translate3d(0,0,0); opacity:.50}
       50%{transform:translate3d(1%, -1%, 0); opacity:.68}
     }
 
-    .inner{
-      position:relative;
-      padding:22px;
-    }
+    .inner{position:relative; padding:22px;}
 
     .top{
       display:flex;
@@ -189,11 +170,7 @@
       text-overflow:ellipsis;
       text-transform:uppercase;
     }
-    .right{
-      flex:0 0 auto;
-      display:flex;
-      justify-content:flex-end;
-    }
+    .right{flex:0 0 auto; display:flex; justify-content:flex-end;}
 
     .row{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
     .two{
@@ -216,7 +193,6 @@
     }
     input,textarea{flex:1;min-width:240px}
     textarea{width:100%;min-height:150px;resize:vertical;line-height:1.35}
-
     input::placeholder, textarea::placeholder{color:rgba(245,247,255,.45)}
     input:focus, textarea:focus{
       border-color: rgba(120,160,255,.45);
@@ -254,14 +230,8 @@
       border-color: rgba(160,190,255,.22);
       box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
     }
-    .pillbtn:hover{
-      box-shadow:
-        0 12px 28px rgba(0,0,0,.35),
-        0 0 0 3px rgba(90,220,255,.10);
-    }
 
     .mini{flex:0;min-width:190px}
-
     .pwwrap{display:flex;gap:12px;flex:1;min-width:260px}
     .pwwrap input{flex:1;min-width:0}
     .pwbtn{flex:0;min-width:130px}
@@ -328,10 +298,7 @@
       pointer-events:none;
       animation: panelGlow 9s ease-in-out infinite;
     }
-    .modal .content{
-      position:relative;
-      padding:18px;
-    }
+    .modal .content{position:relative; padding:18px;}
     .modal h2{
       margin:0 0 12px;
       font-size:16px;
@@ -351,9 +318,7 @@
       margin-top:14px;
       flex-wrap:wrap;
     }
-    .modal .actions button{
-      min-width:130px;
-    }
+    .modal .actions button{min-width:130px;}
     .btn-primary{
       border-color: rgba(120,160,255,.28);
       background:
@@ -375,7 +340,7 @@
   <div class="sky" aria-hidden="true">
     <div class="stars"></div>
     <div class="haze"></div>
-    <div class="meteors" id="meteors"></div>
+    <div class="rain" id="rain"></div>
   </div>
 
   <div class="wrap">
@@ -513,10 +478,8 @@
       toast("Đã bật bảo mật");
     } else {
       disableInSafeMode.forEach(id => setDisabled(id, false));
-
       $("plain").placeholder = "Văn bản gốc";
       $("out").placeholder = "Kết quả";
-
       toast("Đã tắt bảo mật");
     }
   }
@@ -741,24 +704,28 @@
     $("btnTogglePass").textContent = isPw ? "ẨN" : "HIỆN";
   }
 
-  function spawnMeteors(){
-    const host = $("meteors");
+  function spawnRain(){
+    const host = $("rain");
     host.innerHTML = "";
-    const count = 14;
+    const isMobile = matchMedia("(max-width: 520px)").matches;
+    const count = isMobile ? 48 : 72;
+
     for (let i=0;i<count;i++){
-      const m = document.createElement("div");
-      m.className = "meteor";
-      const top = Math.random() * 70;
-      const left = -30 + Math.random() * 40;
-      const dur = 5.5 + Math.random() * 3.5;
-      const delay = Math.random() * 3.5;
-      const size = 180 + Math.random() * 220;
-      m.style.top = top + "vh";
-      m.style.left = left + "vw";
-      m.style.width = size + "px";
-      m.style.setProperty("--dur", dur + "s");
-      m.style.setProperty("--delay", delay + "s");
-      host.appendChild(m);
+      const d = document.createElement("div");
+      d.className = "drop";
+      const left = Math.random() * 110;
+      const delay = Math.random() * 1.8;
+      const dur = 0.95 + Math.random() * 0.75;
+      const h = 9 + Math.random() * 14;
+      const tilt = 10 + Math.random() * 12;
+
+      d.style.left = left + "vw";
+      d.style.height = h + "vh";
+      d.style.opacity = (0.22 + Math.random() * 0.35).toFixed(2);
+      d.style.setProperty("--delay", delay + "s");
+      d.style.setProperty("--dur", dur + "s");
+      d.style.transform = `rotate(${tilt}deg)`;
+      host.appendChild(d);
     }
   }
 
@@ -773,8 +740,12 @@
     applySafeMode();
   });
 
-  spawnMeteors();
-  setInterval(spawnMeteors, 12000);
+  spawnRain();
+  window.addEventListener("resize", () => {
+    clearTimeout(window.__rainT);
+    window.__rainT = setTimeout(spawnRain, 160);
+  });
+
   applySafeMode();
 </script>
 </body>
