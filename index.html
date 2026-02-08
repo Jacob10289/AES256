@@ -88,7 +88,7 @@
     </div>
 
     <div class="row">
-      <input id="plain" placeholder="Văn bản gốc." value="" autocomplete="off" />
+      <input id="plain" placeholder="Văn bản gốc" value="" autocomplete="off" />
       <input id="iters" class="mini" type="number" value="600000" min="100000" step="100000" inputmode="numeric" />
     </div>
 
@@ -188,7 +188,7 @@
       // Re-enable controls
       disableInSafeMode.forEach(id => setDisabled(id, false));
 
-      $("plain").placeholder = "Văn bản gốc (plaintext)";
+      $("plain").placeholder = "Văn bản gốc";
       $("out").placeholder = "Kết quả";
 
       toast("Đã tắt bảo mật an toàn");
