@@ -29,23 +29,26 @@
       backdrop-filter: blur(6px);
     }
 
-    /* HEADER: fix chồng chữ trên mobile */
     .top{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:12px;
-      margin-bottom:12px;
-      flex-wrap:wrap;
-    }
-    h1{
-      margin:0;
-      font-size:16px;
-      letter-spacing:.2px;
-      opacity:.92;
-      white-space:nowrap;     /* yêu cầu của bạn: title 1 dòng */
-      flex:1 1 220px;
-      min-width:220px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+  flex-wrap:nowrap;          /* luôn 1 hàng */
+}
+
+h1{
+  margin:0;
+  font-size:16px;
+  letter-spacing:.2px;
+  opacity:.92;
+  flex:1 1 auto;             /* co lại để nhường chỗ cho pill */
+  min-width:0;               /* quan trọng để ellipsis hoạt động */
+  white-space:nowrap;        /* 1 dòng */
+  overflow:hidden;
+  text-overflow:ellipsis;    /* thiếu chỗ thì ... thay vì rớt dòng */
+}
     }
     .right{
       flex:0 0 auto;
@@ -114,10 +117,6 @@
       filter:saturate(.8);
     }
 
-    /* Mobile tuning */
-    @media (max-width: 430px){
-      h1{flex:1 1 100%; min-width:0}     /* title xuống 1 dòng riêng */
-      .right{width:100%; justify-content:flex-end} /* pill xuống dòng, nằm bên phải */
       input,textarea{min-width:0}
       .mini{min-width:0;flex:1}
       .pwbtn{min-width:110px}
