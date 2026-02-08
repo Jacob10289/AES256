@@ -28,22 +28,38 @@
       background:var(--panel);
       backdrop-filter: blur(6px);
     }
+
+    /* Header giống ảnh: trái title, phải pill */
     .top{
-      display:flex;align-items:center;justify-content:space-between;
-      gap:12px;margin-bottom:12px;
-      flex-wrap:wrap; /* chống chồng chữ trên mobile */
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      margin-bottom:12px;
     }
     h1{
       margin:0;
       font-size:16px;
       letter-spacing:.2px;
       opacity:.92;
-      white-space:nowrap;
-      flex:1;
-      min-width:0;
+      white-space:nowrap;          /* 1) title 1 dòng */
+      flex: 1 1 auto;
+      min-width: 0;
     }
+    .right{flex:0 0 auto; display:flex; justify-content:flex-end}
+    .pillbtn{
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:rgba(0,0,0,.18);
+      color:rgba(245,245,247,.9);
+      font-size:12px;
+      cursor:pointer;
+      white-space:nowrap;
+    }
+
+    /* Row + controls */
     .row{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
-    .row.two > *{flex:1;min-width:0} /* 2 nút ngang nhau */
     input,textarea,button{
       border-radius:12px;
       border:1px solid var(--line);
@@ -57,7 +73,22 @@
     textarea{width:100%;min-height:140px;resize:vertical;line-height:1.35}
     button{cursor:pointer;user-select:none}
     button:active{transform:translateY(1px)}
+
+    /* giữ iterations trông như ô riêng, giống ảnh */
     .mini{flex:0;min-width:190px}
+
+    /* 2 nút ngang nhau, giống ảnh */
+    .two{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    .two > button{width:100%}
+
+    .pwwrap{display:flex;gap:10px;flex:1;min-width:260px}
+    .pwwrap input{flex:1;min-width:0}
+    .pwbtn{flex:0;min-width:120px}
+
     .toast{
       position:fixed;left:50%;bottom:28px;transform:translateX(-50%);
       background:rgba(0,0,0,.78);
@@ -68,29 +99,20 @@
       box-shadow:0 12px 26px var(--shadow);
     }
     .toast.show{opacity:1}
-    .right{display:flex;gap:8px;align-items:center;justify-content:flex-end}
-    .pillbtn{
-      padding:8px 12px;border-radius:999px;border:1px solid var(--line);
-      background:rgba(0,0,0,.18);
-      color:rgba(245,245,247,.9);
-      font-size:12px;
-      cursor:pointer;
-      white-space:nowrap;
-    }
-    .pwwrap{display:flex;gap:10px;flex:1;min-width:240px}
-    .pwwrap input{flex:1;min-width:0}
-    .pwbtn{flex:0;min-width:120px}
+
     .disabled{
       opacity:.45;
       pointer-events:none;
       filter:saturate(.8);
     }
 
-    /* Mobile: giữ layout cân */
+    /* Mobile fix: đảm bảo không bị gãy layout */
     @media (max-width: 420px){
       input,textarea{min-width:0}
       .mini{min-width:0;flex:1}
       .pwbtn{min-width:110px}
+      .pwwrap{min-width:0}
+      .top{gap:10px}
     }
   </style>
 </head>
@@ -105,9 +127,7 @@
 
     <div class="row">
       <input id="plain" placeholder="Văn bản gốc" value="" autocomplete="off" />
-    </div>
-
-    <div class="row">
+      <!-- 2) mặc định 100000 -->
       <input id="iters" class="mini" type="number" value="100000" min="100000" step="100000" inputmode="numeric" />
     </div>
 
@@ -118,7 +138,7 @@
       </div>
     </div>
 
-    <!-- MÃ HOÁ + GIẢI MÃ ngang nhau -->
+    <!-- 3) MÃ HOÁ + GIẢI MÃ ngang nhau (đúng như ảnh) -->
     <div class="row two">
       <button id="btnEnc">MÃ HOÁ</button>
       <button id="btnDec">GIẢI MÃ</button>
@@ -128,7 +148,7 @@
       <textarea id="token" spellcheck="false" placeholder="Token mã hoá"></textarea>
     </div>
 
-    <!-- SAO CHÉP + XOÁ ngang nhau -->
+    <!-- 4) SAO CHÉP + XOÁ ngang nhau + đổi tên -->
     <div class="row two">
       <button id="btnCopy">SAO CHÉP</button>
       <button id="btnClear">XOÁ</button>
