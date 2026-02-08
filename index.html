@@ -3,50 +3,66 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PBKDF2 + AES-256-GCM</title>
+  <title>PBKDF2 + AES-256-GCM (v3)</title>
   <style>
     body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0b0b0f;color:#f5f5f7;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-    .box{width:min(960px,92vw);padding:24px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.04)}
-    h1{margin:0 0 10px;font-size:18px;opacity:.9}
+    .box{width:min(980px,92vw);padding:24px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.04)}
+    h1{margin:0 0 10px;font-size:18px;opacity:.95}
     .row{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
     input,textarea,button{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);color:#fff;padding:12px 14px;font-size:14px}
     input,textarea{flex:1;min-width:260px}
-    textarea{width:100%;min-height:92px;resize:vertical}
+    textarea{width:100%;min-height:110px;resize:vertical;line-height:1.35}
     button{cursor:pointer}
-    .hint{opacity:.7;font-size:12px;line-height:1.45;margin-top:8px}
+    .hint{opacity:.72;font-size:12px;line-height:1.45;margin-top:8px}
     code{word-break:break-all}
-    .danger{opacity:.85}
+    .danger{opacity:.9}
+    .mini{min-width:170px;flex:0}
+    .toast{
+      position:fixed;left:50%;bottom:28px;transform:translateX(-50%);
+      background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.16);
+      padding:10px 14px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;
+      transition:opacity .18s ease;
+    }
+    .toast.show{opacity:1}
   </style>
 </head>
 <body>
   <div class="box">
-    <h1>Passphrase → PBKDF2 (SHA-256) → AES-256-GCM</h1>
+    <h1>Passphrase → PBKDF2 (SHA-256) → AES-256-GCM (TOKEN v3)</h1>
 
     <div class="row">
-      <input id="plain" value="Pham Duong" />
+      <input id="plain" placeholder="Nhập plaintext (ví dụ: Pham Duong)" value="Pham Duong" />
+    </div>
+
+    <div class="row">
       <input id="pass" placeholder="Nhập PASS (chỉ bạn biết)" />
+      <input id="iters" class="mini" type="number" value="600000" min="100000" step="100000" />
       <button id="btnEnc">Encrypt</button>
     </div>
 
     <div class="row">
-      <textarea id="token" placeholder="TOKEN v2.<salt>.<nonce>.<ciphertext>.<tag> sẽ xuất hiện ở đây..."></textarea>
+      <textarea id="token" placeholder="TOKEN v3.<iters>.<salt>.<nonce>.<ciphertext>.<tag> sẽ xuất hiện ở đây..."></textarea>
     </div>
 
     <div class="row">
+      <button id="btnCopy">Copy TOKEN</button>
       <button id="btnDec">Decrypt (dùng PASS + TOKEN)</button>
       <input id="out" placeholder="Kết quả giải mã..." />
     </div>
 
     <div class="hint">
-      <div><b>Format token:</b> <code>v2.&lt;salt&gt;.&lt;nonce&gt;.&lt;ciphertext&gt;.&lt;tag&gt;</code> (Base64URL, bỏ "=")</div>
-      <div class="danger">PASS phải mạnh. Token public vẫn OK vì không có PASS thì không giải được.</div>
-      <div>PBKDF2 iterations: <span id="it"></span></div>
+      <div><b>Format token:</b> <code>v3.&lt;iters&gt;.&lt;salt&gt;.&lt;nonce&gt;.&lt;ciphertext&gt;.&lt;tag&gt;</code> (Base64URL, bỏ "=")</div>
+      <div class="danger">“Khó biết” phụ thuộc chủ yếu vào PASS mạnh + iterations cao. Token public vẫn OK.</div>
+      <div>Gợi ý: PASS nên 20–32 ký tự. Iterations 600k là mức mạnh nhưng có thể hơi chậm trên máy yếu.</div>
     </div>
   </div>
+
+  <div id="toast" class="toast">Copied</div>
 
 <script>
   const $ = (id) => document.getElementById(id);
 
+  // Base64URL helpers
   const b64url = (u8) =>
     btoa(String.fromCharCode(...u8))
       .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
@@ -63,10 +79,19 @@
   const enc = new TextEncoder();
   const dec = new TextDecoder();
 
-  const PBKDF2_ITERS = 200000; // nếu thấy chậm trên iPhone, giảm xuống 100000
-  $("it").textContent = PBKDF2_ITERS.toLocaleString("vi-VN");
+  const getIters = () => {
+    const n = parseInt($("iters").value || "600000", 10);
+    return Number.isFinite(n) ? Math.max(100000, n) : 600000;
+  };
 
-  async function deriveAesKeyFromPass(pass, saltU8) {
+  function toast(msg){
+    const t = $("toast");
+    t.textContent = msg;
+    t.classList.add("show");
+    setTimeout(()=>t.classList.remove("show"), 900);
+  }
+
+  async function deriveAesKeyFromPass(pass, saltU8, iters) {
     const passKey = await crypto.subtle.importKey(
       "raw",
       enc.encode(pass),
@@ -76,7 +101,7 @@
     );
 
     return crypto.subtle.deriveKey(
-      { name: "PBKDF2", salt: saltU8, iterations: PBKDF2_ITERS, hash: "SHA-256" },
+      { name: "PBKDF2", salt: saltU8, iterations: iters, hash: "SHA-256" },
       passKey,
       { name: "AES-GCM", length: 256 },
       false,
@@ -89,12 +114,14 @@
       const plain = $("plain").value;
       const pass = $("pass").value;
 
-      if (!pass || pass.length < 10) throw new Error("PASS nên >= 10 ký tự (khuyến nghị 16+).");
+      if (!plain) throw new Error("Bạn chưa nhập plaintext.");
+      if (!pass || pass.length < 10) throw new Error("PASS nên >= 10 ký tự (khuyến nghị 20+).");
 
+      const iters = getIters();
       const salt = crypto.getRandomValues(new Uint8Array(16));
       const nonce = crypto.getRandomValues(new Uint8Array(12));
 
-      const aesKey = await deriveAesKeyFromPass(pass, salt);
+      const aesKey = await deriveAesKeyFromPass(pass, salt, iters);
 
       const ctAll = new Uint8Array(await crypto.subtle.encrypt(
         { name: "AES-GCM", iv: nonce },
@@ -102,11 +129,13 @@
         enc.encode(plain)
       ));
 
+      // ciphertext||tag (tag 16 bytes cuối)
       const ciphertext = ctAll.slice(0, ctAll.length - 16);
       const tag = ctAll.slice(ctAll.length - 16);
 
-      $("token").value = `v2.${b64url(salt)}.${b64url(nonce)}.${b64url(ciphertext)}.${b64url(tag)}`;
+      $("token").value = `v3.${iters}.${b64url(salt)}.${b64url(nonce)}.${b64url(ciphertext)}.${b64url(tag)}`;
       $("out").value = "";
+      toast("Encrypted");
     } catch (e) {
       $("out").value = "Encrypt failed: " + e.message;
     }
@@ -118,16 +147,20 @@
       const token = $("token").value.trim();
 
       if (!pass) throw new Error("Nhập PASS trước.");
+      if (!token) throw new Error("Dán TOKEN trước.");
 
       const parts = token.split(".");
-      if (parts.length !== 5 || parts[0] !== "v2") throw new Error("TOKEN sai format v2.");
+      if (parts.length !== 6 || parts[0] !== "v3") throw new Error("TOKEN sai format v3.");
 
-      const salt = b64urlToU8(parts[1]);
-      const nonce = b64urlToU8(parts[2]);
-      const ciphertext = b64urlToU8(parts[3]);
-      const tag = b64urlToU8(parts[4]);
+      const iters = parseInt(parts[1], 10);
+      if (!Number.isFinite(iters) || iters < 100000) throw new Error("Iterations trong token không hợp lệ.");
 
-      const aesKey = await deriveAesKeyFromPass(pass, salt);
+      const salt = b64urlToU8(parts[2]);
+      const nonce = b64urlToU8(parts[3]);
+      const ciphertext = b64urlToU8(parts[4]);
+      const tag = b64urlToU8(parts[5]);
+
+      const aesKey = await deriveAesKeyFromPass(pass, salt, iters);
 
       const ctAll = new Uint8Array(ciphertext.length + tag.length);
       ctAll.set(ciphertext, 0);
@@ -140,13 +173,30 @@
       ));
 
       $("out").value = dec.decode(pt);
+      toast("Decrypted");
     } catch (e) {
       $("out").value = "Decrypt failed: " + e.message;
     }
   }
 
+  async function copyToken(){
+    const token = $("token").value.trim();
+    if (!token) return toast("No token");
+    try{
+      await navigator.clipboard.writeText(token);
+      toast("Copied TOKEN");
+    }catch{
+      // fallback
+      $("token").focus();
+      $("token").select();
+      document.execCommand("copy");
+      toast("Copied (fallback)");
+    }
+  }
+
   $("btnEnc").addEventListener("click", encrypt);
   $("btnDec").addEventListener("click", decrypt);
+  $("btnCopy").addEventListener("click", copyToken);
 </script>
 </body>
 </html>
