@@ -3,64 +3,125 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>PBKDF2 + AES-256-GCM (v3)</title>
+  <title>AES-256-GCM (v3)</title>
   <style>
-    body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#0b0b0f;color:#f5f5f7;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-    .box{width:min(980px,92vw);padding:24px;border:1px solid rgba(255,255,255,.12);border-radius:16px;background:rgba(255,255,255,.04)}
-    h1{margin:0 0 10px;font-size:18px;opacity:.95}
-    .row{display:flex;gap:10px;flex-wrap:wrap;margin:12px 0}
-    input,textarea,button{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.25);color:#fff;padding:12px 14px;font-size:14px}
-    input,textarea{flex:1;min-width:260px}
-    textarea{width:100%;min-height:110px;resize:vertical;line-height:1.35}
-    button{cursor:pointer}
-    .hint{opacity:.72;font-size:12px;line-height:1.45;margin-top:8px}
-    code{word-break:break-all}
-    .danger{opacity:.9}
-    .mini{min-width:170px;flex:0}
+    :root{
+      --bg:#0b0b0f;
+      --fg:#f5f5f7;
+      --muted:rgba(245,245,247,.72);
+      --line:rgba(255,255,255,.12);
+      --panel:rgba(255,255,255,.04);
+      --field:rgba(0,0,0,.25);
+      --shadow:rgba(0,0,0,.65);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;min-height:100vh;
+      display:flex;align-items:center;justify-content:center;
+      background:var(--bg);color:var(--fg);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+    }
+    .box{
+      width:min(980px,92vw);
+      padding:24px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:var(--panel);
+      backdrop-filter: blur(6px);
+    }
+    .top{
+      display:flex;align-items:center;justify-content:space-between;
+      gap:12px;margin-bottom:12px;
+    }
+    h1{margin:0;font-size:16px;letter-spacing:.2px;opacity:.92}
+    .row{display:flex;gap:10px;flex-wrap:wrap;margin:10px 0}
+    input,textarea,button{
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:var(--field);
+      color:var(--fg);
+      padding:12px 14px;
+      font-size:14px;
+      outline:none;
+    }
+    input,textarea{flex:1;min-width:240px}
+    textarea{width:100%;min-height:140px;resize:vertical;line-height:1.35}
+    button{cursor:pointer;user-select:none}
+    button:active{transform:translateY(1px)}
+    .mini{flex:0;min-width:170px}
+    .iconbtn{flex:0;min-width:140px}
+    .hint{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.45}
+    .split{height:1px;background:var(--line);margin:14px 0}
     .toast{
       position:fixed;left:50%;bottom:28px;transform:translateX(-50%);
-      background:rgba(0,0,0,.75);border:1px solid rgba(255,255,255,.16);
-      padding:10px 14px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;
+      background:rgba(0,0,0,.78);
+      border:1px solid rgba(255,255,255,.16);
+      padding:10px 14px;border-radius:12px;
+      font-size:13px;opacity:0;pointer-events:none;
       transition:opacity .18s ease;
+      box-shadow:0 12px 26px var(--shadow);
     }
     .toast.show{opacity:1}
+    .danger{color:rgba(245,245,247,.82)}
+    .right{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+    .pill{
+      padding:8px 10px;border-radius:999px;border:1px solid var(--line);
+      background:rgba(0,0,0,.18);color:rgba(245,245,247,.85);
+      font-size:12px;
+    }
+    .pwwrap{display:flex;gap:10px;flex:1;min-width:260px}
+    .pwwrap input{flex:1;min-width:0}
+    .pwbtn{flex:0;min-width:110px}
   </style>
 </head>
 <body>
   <div class="box">
-    <h1>Passphrase → PBKDF2 (SHA-256) → AES-256-GCM (TOKEN v3)</h1>
-
-    <div class="row">
-      <input id="plain" placeholder="Nhập plaintext (ví dụ: Pham Duong)" value="Pham Duong" />
+    <div class="top">
+      <h1>AES-256-GCM (v3)</h1>
+      <div class="right">
+        <span id="status" class="pill">READY</span>
+        <button id="btnStealth" class="iconbtn">STEALTH: OFF</button>
+      </div>
     </div>
 
     <div class="row">
-      <input id="pass" placeholder="Nhập PASS (chỉ bạn biết)" />
-      <input id="iters" class="mini" type="number" value="600000" min="100000" step="100000" />
-      <button id="btnEnc">Encrypt</button>
+      <input id="plain" placeholder="PLAINTEXT" value="Pham Duong" autocomplete="off" />
+      <input id="iters" class="mini" type="number" value="600000" min="100000" step="100000" inputmode="numeric" />
     </div>
 
     <div class="row">
-      <textarea id="token" placeholder="TOKEN v3.<iters>.<salt>.<nonce>.<ciphertext>.<tag> sẽ xuất hiện ở đây..."></textarea>
+      <div class="pwwrap">
+        <input id="pass" type="password" placeholder="PASS" autocomplete="new-password" />
+        <button id="btnTogglePass" class="pwbtn">SHOW</button>
+      </div>
+      <button id="btnEnc" class="iconbtn">ENCRYPT</button>
+      <button id="btnDec" class="iconbtn">DECRYPT</button>
     </div>
 
     <div class="row">
-      <button id="btnCopy">Copy TOKEN</button>
-      <button id="btnDec">Decrypt (dùng PASS + TOKEN)</button>
-      <input id="out" placeholder="Kết quả giải mã..." />
+      <textarea id="token" spellcheck="false" placeholder="TOKEN"></textarea>
     </div>
+
+    <div class="row">
+      <button id="btnCopy" class="iconbtn">COPY</button>
+      <button id="btnClear" class="iconbtn">CLEAR</button>
+      <input id="out" placeholder="OUTPUT" autocomplete="off" />
+    </div>
+
+    <div class="split"></div>
 
     <div class="hint">
-      <div><b>Format token:</b> <code>v3.&lt;iters&gt;.&lt;salt&gt;.&lt;nonce&gt;.&lt;ciphertext&gt;.&lt;tag&gt;</code> (Base64URL, bỏ "=")</div>
-      <div class="danger">“Khó biết” phụ thuộc chủ yếu vào PASS mạnh + iterations cao. Token public vẫn OK.</div>
-      <div>Gợi ý: PASS nên 20–32 ký tự. Iterations 600k là mức mạnh nhưng có thể hơi chậm trên máy yếu.</div>
+      <div class="danger"><code id="fmt">v3.&lt;iters&gt;.&lt;salt&gt;.&lt;nonce&gt;.&lt;ciphertext&gt;.&lt;tag&gt;</code></div>
     </div>
   </div>
 
-  <div id="toast" class="toast">Copied</div>
+  <div id="toast" class="toast">OK</div>
 
 <script>
   const $ = (id) => document.getElementById(id);
+
+  const enc = new TextEncoder();
+  const dec = new TextDecoder();
 
   // Base64URL helpers
   const b64url = (u8) =>
@@ -76,19 +137,38 @@
     return u8;
   };
 
-  const enc = new TextEncoder();
-  const dec = new TextDecoder();
-
   const getIters = () => {
     const n = parseInt($("iters").value || "600000", 10);
     return Number.isFinite(n) ? Math.max(100000, n) : 600000;
   };
+
+  const setStatus = (s) => { $("status").textContent = s; };
 
   function toast(msg){
     const t = $("toast");
     t.textContent = msg;
     t.classList.add("show");
     setTimeout(()=>t.classList.remove("show"), 900);
+  }
+
+  let STEALTH = false;
+
+  function applyStealth(){
+    $("btnStealth").textContent = `STEALTH: ${STEALTH ? "ON" : "OFF"}`;
+    if (STEALTH) {
+      $("plain").value = "";
+      $("out").value = "";
+      $("pass").value = "";
+      $("plain").placeholder = "PLAINTEXT (HIDDEN MODE)";
+      $("out").placeholder = "OUTPUT (HIDDEN MODE)";
+      setStatus("STEALTH");
+      toast("STEALTH ON");
+    } else {
+      $("plain").placeholder = "PLAINTEXT";
+      $("out").placeholder = "OUTPUT";
+      setStatus("READY");
+      toast("STEALTH OFF");
+    }
   }
 
   async function deriveAesKeyFromPass(pass, saltU8, iters) {
@@ -109,13 +189,39 @@
     );
   }
 
+  function getPlaintextForEncrypt(){
+    if (!STEALTH) return $("plain").value;
+    const v = prompt("PLAINTEXT:", "");
+    return (v ?? "").trim();
+  }
+
+  function setPlaintextAfterEncrypt(){
+    if (STEALTH) $("plain").value = "";
+  }
+
+  function setOutputAfterDecrypt(text){
+    if (STEALTH) {
+      $("out").value = "";
+      alert(text);
+    } else {
+      $("out").value = text;
+    }
+  }
+
+  function clearSensitive(){
+    $("pass").value = "";
+    if (STEALTH) $("plain").value = "";
+  }
+
   async function encrypt() {
     try {
-      const plain = $("plain").value;
+      setStatus("WORKING");
+
+      const plain = getPlaintextForEncrypt();
       const pass = $("pass").value;
 
-      if (!plain) throw new Error("Bạn chưa nhập plaintext.");
-      if (!pass || pass.length < 10) throw new Error("PASS nên >= 10 ký tự (khuyến nghị 20+).");
+      if (!plain) throw new Error("NO PLAINTEXT");
+      if (!pass || pass.length < 10) throw new Error("WEAK PASS");
 
       const iters = getIters();
       const salt = crypto.getRandomValues(new Uint8Array(16));
@@ -129,31 +235,40 @@
         enc.encode(plain)
       ));
 
-      // ciphertext||tag (tag 16 bytes cuối)
       const ciphertext = ctAll.slice(0, ctAll.length - 16);
       const tag = ctAll.slice(ctAll.length - 16);
 
       $("token").value = `v3.${iters}.${b64url(salt)}.${b64url(nonce)}.${b64url(ciphertext)}.${b64url(tag)}`;
-      $("out").value = "";
-      toast("Encrypted");
+
+      setPlaintextAfterEncrypt();
+      clearSensitive();
+
+      setStatus("ENCRYPTED");
+      toast("ENCRYPTED");
     } catch (e) {
-      $("out").value = "Encrypt failed: " + e.message;
+      setStatus("ERROR");
+      toast("ERROR");
+      if (!STEALTH) $("out").value = "Encrypt failed: " + (e?.message || e);
+    } finally {
+      setTimeout(()=>{ if (!STEALTH) setStatus("READY"); }, 900);
     }
   }
 
   async function decrypt() {
     try {
+      setStatus("WORKING");
+
       const pass = $("pass").value.trim();
       const token = $("token").value.trim();
 
-      if (!pass) throw new Error("Nhập PASS trước.");
-      if (!token) throw new Error("Dán TOKEN trước.");
+      if (!pass) throw new Error("NO PASS");
+      if (!token) throw new Error("NO TOKEN");
 
       const parts = token.split(".");
-      if (parts.length !== 6 || parts[0] !== "v3") throw new Error("TOKEN sai format v3.");
+      if (parts.length !== 6 || parts[0] !== "v3") throw new Error("BAD TOKEN");
 
       const iters = parseInt(parts[1], 10);
-      if (!Number.isFinite(iters) || iters < 100000) throw new Error("Iterations trong token không hợp lệ.");
+      if (!Number.isFinite(iters) || iters < 100000) throw new Error("BAD ITERS");
 
       const salt = b64urlToU8(parts[2]);
       const nonce = b64urlToU8(parts[3]);
@@ -172,31 +287,71 @@
         ctAll
       ));
 
-      $("out").value = dec.decode(pt);
-      toast("Decrypted");
+      const text = dec.decode(pt);
+      setOutputAfterDecrypt(text);
+      clearSensitive();
+
+      setStatus("DECRYPTED");
+      toast("DECRYPTED");
     } catch (e) {
-      $("out").value = "Decrypt failed: " + e.message;
+      setStatus("ERROR");
+      toast("ERROR");
+      if (!STEALTH) $("out").value = "Decrypt failed: " + (e?.message || e);
+    } finally {
+      setTimeout(()=>{ if (!STEALTH) setStatus("READY"); }, 900);
     }
   }
 
   async function copyToken(){
     const token = $("token").value.trim();
-    if (!token) return toast("No token");
+    if (!token) return toast("NO TOKEN");
     try{
       await navigator.clipboard.writeText(token);
-      toast("Copied TOKEN");
+      toast("COPIED");
     }catch{
-      // fallback
       $("token").focus();
       $("token").select();
       document.execCommand("copy");
-      toast("Copied (fallback)");
+      toast("COPIED");
     }
+  }
+
+  function clearAll(){
+    $("plain").value = STEALTH ? "" : $("plain").value;
+    $("pass").value = "";
+    $("token").value = "";
+    $("out").value = "";
+    setStatus(STEALTH ? "STEALTH" : "READY");
+    toast("CLEARED");
+  }
+
+  function togglePass(){
+    const p = $("pass");
+    const isPw = p.type === "password";
+    p.type = isPw ? "text" : "password";
+    $("btnTogglePass").textContent = isPw ? "HIDE" : "SHOW";
   }
 
   $("btnEnc").addEventListener("click", encrypt);
   $("btnDec").addEventListener("click", decrypt);
   $("btnCopy").addEventListener("click", copyToken);
+  $("btnClear").addEventListener("click", clearAll);
+  $("btnTogglePass").addEventListener("click", togglePass);
+
+  $("btnStealth").addEventListener("click", () => {
+    STEALTH = !STEALTH;
+    applyStealth();
+  });
+
+  // Hotkeys: Ctrl/⌘+Enter encrypt, Ctrl/⌘+Shift+Enter decrypt
+  document.addEventListener("keydown", (e) => {
+    const mod = e.ctrlKey || e.metaKey;
+    if (!mod) return;
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); encrypt(); }
+    if (e.key === "Enter" && e.shiftKey) { e.preventDefault(); decrypt(); }
+  });
+
+  setStatus("READY");
 </script>
 </body>
 </html>
