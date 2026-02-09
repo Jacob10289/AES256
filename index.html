@@ -6,9 +6,8 @@
   <title>AES-256-GCM</title>
   <style>
     :root{
-      --bg0:#06070b;
-      --bg1:#0b1020;
-      --bg2:#070a12;
+      --bg0:#05060a;
+      --bg1:#0a1020;
       --fg:#eef2ff;
 
       --line:rgba(255,255,255,.10);
@@ -17,9 +16,8 @@
       --card:rgba(10,12,18,.58);
       --field:rgba(10,12,18,.52);
 
-      --g1:linear-gradient(135deg, rgba(82,170,255,.22), rgba(148,92,255,.16), rgba(0,255,209,.10));
-      --g2:linear-gradient(135deg, rgba(0,255,209,.18), rgba(82,170,255,.18), rgba(148,92,255,.14));
       --gbtn:linear-gradient(135deg, rgba(82,170,255,.26), rgba(148,92,255,.20), rgba(0,255,209,.14));
+      --gsoft:linear-gradient(135deg, rgba(255,255,255,.05), rgba(0,0,0,.24));
 
       --r:14px;
     }
@@ -55,6 +53,59 @@
         radial-gradient(900px 650px at 30% 22%, rgba(255,255,255,.05), transparent 68%),
         radial-gradient(900px 650px at 80% 34%, rgba(255,255,255,.035), transparent 70%),
         radial-gradient(900px 650px at 50% 88%, rgba(255,255,255,.025), transparent 70%);
+    }
+
+    .meteorLayer{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
+      z-index:1;
+      overflow:hidden;
+      opacity:.9;
+    }
+
+    .meteor{
+      position:absolute;
+      top:-20vh;
+      left:-20vw;
+      width:2px;
+      height:140px;
+      transform:rotate(32deg);
+      background:linear-gradient(180deg, rgba(255,255,255,.0), rgba(160,210,255,.55), rgba(255,255,255,.0));
+      filter:drop-shadow(0 0 8px rgba(120,190,255,.25));
+      animation:shoot 3.8s linear infinite;
+      will-change:transform,opacity;
+      opacity:0;
+    }
+
+    .meteor:after{
+      content:"";
+      position:absolute;
+      top:6px;
+      left:-34px;
+      width:70px;
+      height:2px;
+      background:linear-gradient(90deg, rgba(255,255,255,.0), rgba(180,220,255,.55), rgba(255,255,255,.0));
+      filter:blur(.1px);
+      opacity:.9;
+    }
+
+    @keyframes shoot{
+      0%{transform:translate3d(-20vw,-18vh,0) rotate(32deg); opacity:0}
+      8%{opacity:.9}
+      35%{opacity:.9}
+      55%{opacity:0}
+      100%{transform:translate3d(140vw,120vh,0) rotate(32deg); opacity:0}
+    }
+
+    .meteor:nth-child(1){top:-10vh; left:-30vw; animation-delay:.6s}
+    .meteor:nth-child(2){top:-22vh; left:-10vw; animation-delay:2.4s; height:170px; opacity:.0}
+    .meteor:nth-child(3){top:-18vh; left:-45vw; animation-delay:4.2s; height:130px}
+    .meteor:nth-child(4){top:-28vh; left:-20vw; animation-delay:6.2s; height:160px; opacity:.0}
+    .meteor:nth-child(5){top:-14vh; left:-55vw; animation-delay:8.0s; height:150px}
+
+    @media (prefers-reduced-motion: reduce){
+      .meteorLayer{display:none}
     }
 
     .wrap{
@@ -147,7 +198,6 @@
     }
 
     input,textarea{flex:1;min-width:240px}
-
     input::placeholder,textarea::placeholder{color:rgba(238,242,255,.42)}
 
     input:focus,textarea:focus{
@@ -190,9 +240,7 @@
       box-shadow:inset 0 1px 0 rgba(255,255,255,.10);
     }
 
-    .btnSoft{
-      background:linear-gradient(135deg, rgba(255,255,255,.05), rgba(0,0,0,.22));
-    }
+    .btnSoft{background:var(--gsoft)}
 
     .danger{
       background:linear-gradient(135deg, rgba(255,80,110,.14), rgba(148,92,255,.12), rgba(0,0,0,.22));
@@ -200,7 +248,6 @@
     }
 
     .mini{flex:0;min-width:190px}
-
     .pwwrap{display:flex;gap:12px;flex:1;min-width:260px}
     .pwwrap input{flex:1;min-width:0}
     .pwbtn{flex:0;min-width:130px}
@@ -240,7 +287,6 @@
     }
 
     .toast.show{opacity:1;transform:translateX(-50%) translateY(-2px)}
-
     .disabled{opacity:.45;pointer-events:none;filter:saturate(.75)}
 
     .modal{
@@ -278,7 +324,6 @@
     .modal .content{position:relative;padding:18px}
     .modal h2{margin:0 0 12px;font-size:15px;letter-spacing:.2px;opacity:.92}
     .modal textarea{min-height:140px;width:100%;background:rgba(0,0,0,.34);border-color:rgba(255,255,255,.14)}
-
     .modal .actions{
       display:flex;
       gap:12px;
@@ -286,7 +331,6 @@
       margin-top:14px;
       flex-wrap:wrap;
     }
-
     .modal .actions button{min-width:130px}
 
     @media (max-width:420px){
@@ -303,6 +347,14 @@
 </head>
 <body>
   <div class="glow" aria-hidden="true"></div>
+
+  <div class="meteorLayer" aria-hidden="true">
+    <span class="meteor"></span>
+    <span class="meteor"></span>
+    <span class="meteor"></span>
+    <span class="meteor"></span>
+    <span class="meteor"></span>
+  </div>
 
   <div class="wrap">
     <div class="shell">
@@ -329,13 +381,13 @@
         </div>
 
         <div class="row grid2">
-          <label for="file" id="btnPick" class="btnG">CHỌN FILE</label>
           <button id="btnEncrypt" class="btnG">MÃ HOÁ</button>
+          <button id="btnDecrypt" class="btnSoft">GIẢI MÃ</button>
         </div>
 
         <div class="row grid2">
+          <label for="file" id="btnPick" class="btnG">CHỌN FILE</label>
           <button id="btnDownload" class="btnSoft">TẢI FILE</button>
-          <button id="btnDecrypt" class="btnSoft">GIẢI MÃ</button>
         </div>
 
         <div class="row">
