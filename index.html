@@ -5,148 +5,42 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>AES-256-GCM</title>
   <style>
-    :root{
-      --bg0:#030305;
-      --bg2:#0b0e14;
-      --fg:#f3f4f7;
-      --line:rgba(255,255,255,.10);
-      --shadow:rgba(0,0,0,.78);
-      --r:12px;
-    }
+    :root{--bg0:#030305;--bg2:#0b0e14;--fg:#f3f4f7;--line:rgba(255,255,255,.10);--shadow:rgba(0,0,0,.78);--r:12px}
     *{box-sizing:border-box}
-    body{
-      margin:0; min-height:100vh;
-      display:flex; align-items:center; justify-content:center;
-      color:var(--fg);
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-      overflow:hidden;
-      background:
-        radial-gradient(1200px 900px at 18% 10%, rgba(120,170,255,.09), transparent 62%),
-        radial-gradient(900px 700px at 86% 18%, rgba(140,120,255,.06), transparent 60%),
-        radial-gradient(900px 700px at 50% 92%, rgba(110,220,255,.05), transparent 64%),
-        linear-gradient(180deg, var(--bg0), var(--bg2));
-    }
-    .sky{
-      position:fixed; inset:0;
-     pointer-events:none; z-index:0;
-      opacity:.9;
-      background:
-        radial-gradient(1000px 700px at 25% 20%, rgba(255,255,255,.05), transparent 65%),
-        radial-gradient(900px 680px at 78% 30%, rgba(255,255,255,.03), transparent 65%),
-        radial-gradient(800px 650px at 55% 85%, rgba(255,255,255,.025), transparent 70%);
-    }
-    .sky::before{
-      content:"";
-      position:absolute; inset:0;
-      opacity:.72;
-      background-image:
-        radial-gradient(1px 1px at 8% 12%, rgba(255,255,255,.95), transparent 60%),
-        radial-gradient(1px 1px at 16% 28%, rgba(255,255,255,.70), transparent 60%),
-        radial-gradient(1px 1px at 22% 76%, rgba(255,255,255,.75), transparent 60%),
-        radial-gradient(1px 1px at 31% 44%, rgba(255,255,255,.65), transparent 60%),
-        radial-gradient(1px 1px at 38% 18%, rgba(255,255,255,.60), transparent 60%),
-        radial-gradient(1px 1px at 44% 62%, rgba(255,255,255,.80), transparent 60%),
-        radial-gradient(1px 1px at 52% 26%, rgba(255,255,255,.70), transparent 60%),
-        radial-gradient(1px 1px at 58% 78%, rgba(255,255,255,.65), transparent 60%),
-        radial-gradient(1px 1px at 64% 48%, rgba(255,255,255,.62), transparent 60%),
-        radial-gradient(1px 1px at 71% 22%, rgba(255,255,255,.60), transparent 60%),
-        radial-gradient(1px 1px at 78% 66%, rgba(255,255,255,.78), transparent 60%),
-        radial-gradient(1px 1px at 86% 38%, rgba(255,255,255,.62), transparent 60%),
-        radial-gradient(1px 1px at 92% 18%, rgba(255,255,255,.58), transparent 60%),
-        radial-gradient(1px 1px at 94% 74%, rgba(255,255,255,.66), transparent 60%);
-    }
-    .wrap{position:relative; z-index:2; width:min(980px,92vw); padding:20px;}
-    .box{
-      width:100%;
-      border-radius:18px;
-      background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.03));
-      border:1px solid rgba(255,255,255,.10);
-      box-shadow: 0 26px 70px rgba(0,0,0,.62), inset 0 1px 0 rgba(255,255,255,.055);
-      backdrop-filter: blur(10px);
-      overflow:hidden;
-      position:relative;
-    }
-    .inner{position:relative; padding:20px;}
-    .top{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px;}
-    h1{margin:0; font-size:16px; letter-spacing:.55px; opacity:.95; text-transform:uppercase;}
-    .right{display:flex; gap:10px; align-items:center;}
-    .row{display:flex; gap:12px; flex-wrap:wrap; margin:12px 0}
-    .two{display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%;}
-    .two > button{width:100%}
-
-    input,textarea,button,label{
-      border-radius:var(--r);
-      border:1px solid rgba(255,255,255,.12);
-      background: rgba(0,0,0,.30);
-      color:var(--fg);
-      padding:13px 14px;
-      font-size:14px;
-      outline:none;
-      transition: transform .14s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease, filter .18s ease;
-    }
-    textarea{width:100%; min-height:160px; resize:vertical; line-height:1.35}
-    input,textarea{flex:1; min-width:240px}
-    input::placeholder, textarea::placeholder{color:rgba(243,244,247,.42)}
-    input:focus, textarea:focus{border-color: rgba(200,210,255,.26); box-shadow: 0 0 0 3px rgba(180,190,255,.09);}
-
-    button,label{cursor:pointer; user-select:none; display:inline-flex; align-items:center; justify-content:center; gap:8px;}
-    button:hover,label:hover{
-      border-color: rgba(230,235,255,.22);
-      box-shadow: 0 12px 26px rgba(0,0,0,.40), 0 0 0 3px rgba(200,210,255,.06);
-      transform: translateY(-1px);
-    }
-    button:active,label:active{transform: translateY(1px) scale(.99);}
-
-    .pillbtn{
-      padding:9px 12px;
-      border-radius:999px;
-      font-size:12px;
-      white-space:nowrap;
-      background: linear-gradient(90deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
-      border-color: rgba(255,255,255,.16);
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
-    }
-    .btn-primary{
-      border-color: rgba(210,220,255,.18);
-      background: linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.10);
-    }
-
-    .mini{flex:0; min-width:190px}
-    .pwwrap{display:flex; gap:12px; flex:1; min-width:260px}
-    .pwwrap input{flex:1; min-width:0}
-    .pwbtn{flex:0; min-width:130px}
-
-    .filewrap{display:flex; gap:12px; width:100%; align-items:center; flex-wrap:wrap;}
-    .filebtn{flex:0 0 auto; min-width:160px;}
-    .filemeta{flex:1 1 auto; min-width:240px; padding:13px 14px; border-radius:var(--r); border:1px solid rgba(255,255,255,.10); background: rgba(0,0,0,.22); color:rgba(243,244,247,.78);}
-    .mono{font-variant-ligatures:none; font-feature-settings:"liga" 0; letter-spacing:.15px; word-break:break-word}
-
-    .toast{
-      position:fixed; left:50%; bottom:28px;
-      transform:translateX(-50%);
-      background:rgba(0,0,0,.74);
-      border:1px solid rgba(255,255,255,.18);
-      padding:10px 14px;
-      border-radius:12px;
-      font-size:13px;
-      opacity:0;
-      pointer-events:none;
-      transition:opacity .18s ease, transform .18s ease;
-      box-shadow:0 12px 26px var(--shadow);
-      z-index:30;
-    }
-    .toast.show{opacity:1; transform:translateX(-50%) translateY(-2px);}
-
-    .disabled{opacity:.45; pointer-events:none; filter:saturate(.75);}
-
-    @media (max-width: 420px){
-      input,textarea{min-width:0}
-      .mini{min-width:0; flex:1}
-      .pwbtn{min-width:110px}
-      .pwwrap{min-width:0}
-      .filebtn{min-width:140px}
-    }
+    body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;overflow:hidden;background:radial-gradient(1200px 900px at 18% 10%, rgba(120,170,255,.09), transparent 62%),radial-gradient(900px 700px at 86% 18%, rgba(140,120,255,.06), transparent 60%),radial-gradient(900px 700px at 50% 92%, rgba(110,220,255,.05), transparent 64%),linear-gradient(180deg,var(--bg0),var(--bg2))}
+    .sky{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.9;background:radial-gradient(1000px 700px at 25% 20%, rgba(255,255,255,.05), transparent 65%),radial-gradient(900px 680px at 78% 30%, rgba(255,255,255,.03), transparent 65%),radial-gradient(800px 650px at 55% 85%, rgba(255,255,255,.025), transparent 70%)}
+    .sky::before{content:"";position:absolute;inset:0;opacity:.72;background-image:radial-gradient(1px 1px at 8% 12%, rgba(255,255,255,.95), transparent 60%),radial-gradient(1px 1px at 16% 28%, rgba(255,255,255,.70), transparent 60%),radial-gradient(1px 1px at 22% 76%, rgba(255,255,255,.75), transparent 60%),radial-gradient(1px 1px at 31% 44%, rgba(255,255,255,.65), transparent 60%),radial-gradient(1px 1px at 38% 18%, rgba(255,255,255,.60), transparent 60%),radial-gradient(1px 1px at 44% 62%, rgba(255,255,255,.80), transparent 60%),radial-gradient(1px 1px at 52% 26%, rgba(255,255,255,.70), transparent 60%),radial-gradient(1px 1px at 58% 78%, rgba(255,255,255,.65), transparent 60%),radial-gradient(1px 1px at 64% 48%, rgba(255,255,255,.62), transparent 60%),radial-gradient(1px 1px at 71% 22%, rgba(255,255,255,.60), transparent 60%),radial-gradient(1px 1px at 78% 66%, rgba(255,255,255,.78), transparent 60%),radial-gradient(1px 1px at 86% 38%, rgba(255,255,255,.62), transparent 60%),radial-gradient(1px 1px at 92% 18%, rgba(255,255,255,.58), transparent 60%),radial-gradient(1px 1px at 94% 74%, rgba(255,255,255,.66), transparent 60%)}
+    .wrap{position:relative;z-index:2;width:min(980px,92vw);padding:20px}
+    .box{width:100%;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.10);box-shadow:0 26px 70px rgba(0,0,0,.62), inset 0 1px 0 rgba(255,255,255,.055);backdrop-filter:blur(10px);overflow:hidden;position:relative}
+    .inner{position:relative;padding:20px}
+    .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
+    h1{margin:0;font-size:16px;letter-spacing:.55px;opacity:.95;text-transform:uppercase}
+    .right{display:flex;gap:10px;align-items:center}
+    .row{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
+    .two{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
+    .two>button{width:100%}
+    input,textarea,button,label{border-radius:var(--r);border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.30);color:var(--fg);padding:13px 14px;font-size:14px;outline:none;transition:transform .14s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease,filter .18s ease}
+    textarea{width:100%;min-height:160px;resize:vertical;line-height:1.35}
+    input,textarea{flex:1;min-width:240px}
+    input::placeholder,textarea::placeholder{color:rgba(243,244,247,.42)}
+    input:focus,textarea:focus{border-color:rgba(200,210,255,.26);box-shadow:0 0 0 3px rgba(180,190,255,.09)}
+    button,label{cursor:pointer;user-select:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
+    button:hover,label:hover{border-color:rgba(230,235,255,.22);box-shadow:0 12px 26px rgba(0,0,0,.40),0 0 0 3px rgba(200,210,255,.06);transform:translateY(-1px)}
+    button:active,label:active{transform:translateY(1px) scale(.99)}
+    .pillbtn{padding:9px 12px;border-radius:999px;font-size:12px;white-space:nowrap;background:linear-gradient(90deg, rgba(255,255,255,.07), rgba(255,255,255,.03));border-color:rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
+    .btn-primary{border-color:rgba(210,220,255,.18);background:linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.04));box-shadow:inset 0 1px 0 rgba(255,255,255,.10)}
+    .mini{flex:0;min-width:190px}
+    .pwwrap{display:flex;gap:12px;flex:1;min-width:260px}
+    .pwwrap input{flex:1;min-width:0}
+    .pwbtn{flex:0;min-width:130px}
+    .filewrap{display:flex;gap:12px;width:100%;align-items:center;flex-wrap:wrap}
+    .filebtn{flex:0 0 auto;min-width:160px}
+    .filemeta{flex:1 1 auto;min-width:240px;padding:13px 14px;border-radius:var(--r);border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.22);color:rgba(243,244,247,.78)}
+    .mono{font-variant-ligatures:none;font-feature-settings:"liga" 0;letter-spacing:.15px;word-break:break-word}
+    .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:rgba(0,0,0,.74);border:1px solid rgba(255,255,255,.18);padding:10px 14px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease;box-shadow:0 12px 26px var(--shadow);z-index:30}
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(-2px)}
+    .disabled{opacity:.45;pointer-events:none;filter:saturate(.75)}
+    @media (max-width:420px){input,textarea{min-width:0}.mini{min-width:0;flex:1}.pwbtn{min-width:110px}.pwwrap{min-width:0}.filebtn{min-width:140px}}
   </style>
 </head>
 <body>
@@ -216,17 +110,29 @@
   const enc = new TextEncoder();
   const dec = new TextDecoder();
 
+  const u8ToB64 = (u8) => {
+    const CHUNK = 0x8000;
+    let s = "";
+    for (let i = 0; i < u8.length; i += CHUNK) {
+      s += String.fromCharCode.apply(null, u8.subarray(i, i + CHUNK));
+    }
+    return btoa(s);
+  };
+
+  const b64ToU8 = (b64) => {
+    const bin = atob(b64);
+    const u8 = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
+    return u8;
+  };
+
   const b64url = (u8) =>
-    btoa(String.fromCharCode(...u8))
-      .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+    u8ToB64(u8).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
 
   const b64urlToU8 = (s) => {
     s = (s || "").replace(/-/g,'+').replace(/_/g,'/');
     s += '='.repeat((4 - (s.length % 4)) % 4);
-    const bin = atob(s);
-    const u8 = new Uint8Array(bin.length);
-    for (let i=0;i<bin.length;i++) u8[i] = bin.charCodeAt(i);
-    return u8;
+    return b64ToU8(s);
   };
 
   const strToB64url = (s) => b64url(enc.encode(s));
@@ -289,8 +195,8 @@
     );
   }
 
-  function clearSensitive(){
-    $("pass").value = "";
+  function clearSensitiveAfterUse(){
+    if (SAFE_MODE) $("pass").value = "";
     if (SAFE_MODE) $("plain").value = "";
   }
 
@@ -319,7 +225,7 @@
 
       $("token").value = `v3.${iters}.${b64url(salt)}.${b64url(nonce)}.${b64url(ciphertext)}.${b64url(tag)}`;
 
-      clearSensitive();
+      clearSensitiveAfterUse();
       toast("Đã mã hoá văn bản");
     } catch (e) {
       toast("Có lỗi");
@@ -372,7 +278,7 @@
       $("token").value =
         `v3f.${iters}.${b64url(salt)}.${b64url(nonce)}.${nameB64}.${mimeB64}.${b64url(ciphertext)}.${b64url(tag)}`;
 
-      clearSensitive();
+      clearSensitiveAfterUse();
       toast("Đã mã hoá file");
     } catch (e) {
       toast("Có lỗi");
@@ -419,7 +325,7 @@
         else $("out").value = text;
 
         LAST_DECRYPTED_FILE = null;
-        clearSensitive();
+        clearSensitiveAfterUse();
         toast("Đã giải mã văn bản");
         return;
       }
@@ -453,7 +359,7 @@
         if (!SAFE_MODE) $("out").value = `Đã giải mã file: ${LAST_DECRYPTED_FILE.name} (${LAST_DECRYPTED_FILE.bytes.length} bytes)`;
         else { $("out").value = ""; alert(`Đã giải mã file: ${LAST_DECRYPTED_FILE.name}`); }
 
-        clearSensitive();
+        clearSensitiveAfterUse();
         toast("Đã giải mã file");
         return;
       }
@@ -496,13 +402,13 @@
 
   function clearAll(){
     if (SAFE_MODE) $("plain").value = "";
-    $("pass").value = "";
     $("token").value = "";
     $("out").value = "";
     SELECTED_FILE = null;
     $("file").value = "";
     $("filemeta").textContent = "Chưa chọn file";
     LAST_DECRYPTED_FILE = null;
+    if (SAFE_MODE) $("pass").value = "";
     toast("Đã xoá");
   }
 
