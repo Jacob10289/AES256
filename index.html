@@ -4,159 +4,173 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>AES-256-GCM</title>
-
   <style>
     :root{
-      --bg0:#07090f;
+      --bg0:#05060a;
       --bg1:#0a1020;
-      --fg:#f5f5f7;
+      --fg:#eef2ff;
 
-      --line:rgba(255,255,255,.12);
-      --panel:rgba(255,255,255,.05);
-      --field:rgba(10,14,24,.55);
-      --shadow:rgba(0,0,0,.65);
+      --line:rgba(255,255,255,.10);
+      --shadow:rgba(0,0,0,.78);
 
-      --btnG1:#2a72ff;
-      --btnG2:#00d6c7;
-      --btnG3:#7a5cff;
+      --card:rgba(10,12,18,.58);
+      --field:rgba(10,12,18,.52);
 
-      --radius:16px;
-      --radiusIn:14px;
+      --gbtn:linear-gradient(135deg, rgba(82,170,255,.26), rgba(148,92,255,.20), rgba(0,255,209,.14));
+      --gsoft:linear-gradient(135deg, rgba(255,255,255,.05), rgba(0,0,0,.24));
+
+      --r:14px;
     }
 
     *{box-sizing:border-box}
+    html,body{height:100%}
 
     body{
       margin:0;
-      min-height:100vh;
+      min-height:100%;
+      padding:18px 0;
       display:flex;
-      align-items:center;
       justify-content:center;
-      background:
-        radial-gradient(1200px 900px at 10% 15%, rgba(40,80,180,.18), transparent 55%),
-        radial-gradient(900px 700px at 85% 25%, rgba(0,220,190,.10), transparent 60%),
-        radial-gradient(900px 900px at 60% 90%, rgba(140,80,255,.10), transparent 55%),
-        linear-gradient(180deg, var(--bg1), var(--bg0));
+      align-items:flex-start;
       color:var(--fg);
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
-      overflow-x:hidden;
-      -webkit-font-smoothing:antialiased;
-      -moz-osx-font-smoothing:grayscale;
-    }
-
-    body::before{
-      content:"";
-      position:fixed;
-      inset:-40%;
-      pointer-events:none;
+      overflow:auto;
+      -webkit-overflow-scrolling:touch;
       background:
-        radial-gradient(700px 450px at 30% 35%, rgba(0,255,204,.18), transparent 60%),
-        radial-gradient(650px 500px at 70% 40%, rgba(64,140,255,.22), transparent 62%),
-        radial-gradient(650px 500px at 55% 70%, rgba(160,90,255,.14), transparent 62%);
-      filter: blur(44px) saturate(120%);
-      opacity:.85;
-      transform: translate3d(0,0,0);
-      animation: auroraDrift 16s ease-in-out infinite alternate;
+        radial-gradient(1100px 800px at 18% 16%, rgba(82,170,255,.10), transparent 62%),
+        radial-gradient(900px 700px at 88% 18%, rgba(148,92,255,.09), transparent 60%),
+        radial-gradient(900px 740px at 55% 92%, rgba(0,255,209,.06), transparent 64%),
+        linear-gradient(180deg,#03040a,#0a0f1a);
     }
 
-    body::after{
-      content:"";
+    .glow{
       position:fixed;
-      inset:-20%;
+      inset:0;
       pointer-events:none;
+      z-index:0;
+      opacity:.95;
       background:
-        radial-gradient(closest-side at 20% 30%, rgba(255,255,255,.06), transparent 65%),
-        radial-gradient(closest-side at 80% 40%, rgba(255,255,255,.045), transparent 68%),
-        radial-gradient(closest-side at 55% 85%, rgba(255,255,255,.04), transparent 70%);
-      filter: blur(18px);
-      opacity:.35;
-      animation: auroraPulse 7s ease-in-out infinite;
+        radial-gradient(900px 650px at 30% 22%, rgba(255,255,255,.04), transparent 68%),
+        radial-gradient(900px 650px at 80% 34%, rgba(255,255,255,.03), transparent 70%),
+        radial-gradient(900px 650px at 50% 88%, rgba(255,255,255,.02), transparent 70%);
     }
 
-    @keyframes auroraDrift{
-      0%   { transform: translate3d(-2%, -1%, 0) scale(1.02) rotate(-2deg); }
-      50%  { transform: translate3d(2%, 1.5%, 0) scale(1.04) rotate(2deg); }
-      100% { transform: translate3d(4%, -1%, 0) scale(1.03) rotate(1deg); }
-    }
-    @keyframes auroraPulse{
-      0%,100%{ opacity:.28; transform: translate3d(0,0,0) scale(1); }
-      50%{ opacity:.42; transform: translate3d(0,0,0) scale(1.02); }
-    }
-
-    .box{
-      width:min(980px,92vw);
-      padding:22px;
-      border:1px solid var(--line);
-      border-radius:var(--radius);
-      background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.028));
-      backdrop-filter: blur(10px);
-      -webkit-backdrop-filter: blur(10px);
-      box-shadow: 0 18px 50px rgba(0,0,0,.40);
-      position:relative;
+    .snowLayer{
+      position:fixed;
+      inset:0;
+      pointer-events:none;
       z-index:1;
+      overflow:hidden;
+      opacity:.95;
     }
 
-    .top{
+    .snow{
+      position:absolute;
+      top:-10vh;
+      left:0;
+      width:2px;
+      height:2px;
+      border-radius:999px;
+      background:rgba(255,255,255,.78);
+      box-shadow:0 0 10px rgba(180,220,255,.12);
+      opacity:0;
+      will-change:transform,opacity;
+      animation: snowFall 9s linear infinite;
+    }
+
+    @keyframes snowFall{
+      0%   { transform: translate3d(0,-12vh,0); opacity:0 }
+      8%   { opacity:.9 }
+      90%  { opacity:.85 }
+      100% { transform: translate3d(var(--drift, 30px), 120vh, 0); opacity:0 }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .snowLayer{display:none}
+      body{scroll-behavior:auto}
+    }
+
+    .wrap{
+      position:relative;
+      z-index:2;
+      width:min(980px,92vw);
+      padding:0 16px 16px;
+    }
+
+    .shell{
+      border-radius:22px;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.11);
+      box-shadow:0 30px 80px rgba(0,0,0,.62), inset 0 1px 0 rgba(255,255,255,.06);
+      backdrop-filter:blur(10px);
+      -webkit-backdrop-filter:blur(10px);
+      overflow:hidden;
+    }
+
+    .appbar{
       display:flex;
       align-items:center;
       justify-content:space-between;
       gap:12px;
-      margin-bottom:12px;
-      flex-wrap:nowrap;
+      padding:14px 16px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      background:
+        radial-gradient(120% 160% at 20% 30%, rgba(82,170,255,.10), transparent 55%),
+        radial-gradient(120% 160% at 86% 20%, rgba(148,92,255,.08), transparent 55%),
+        linear-gradient(180deg, rgba(0,0,0,.28), rgba(0,0,0,.10));
     }
-    h1{
-      margin:0;
-      font-size:16px;
-      letter-spacing:.25px;
-      opacity:.92;
-      flex:1 1 auto;
+
+    .brand{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
       min-width:0;
+    }
+
+    .brand .t{
+      font-size:13px;
+      letter-spacing:.6px;
+      text-transform:uppercase;
+      opacity:.95;
       white-space:nowrap;
       overflow:hidden;
       text-overflow:ellipsis;
     }
-    .right{
-      flex:0 0 auto;
+
+    .actions{
       display:flex;
-      justify-content:flex-end;
-      min-width:0;
+      gap:10px;
+      align-items:center;
+      flex:0 0 auto;
     }
+
+    .content{padding:18px}
 
     .row{
       display:flex;
-      gap:10px;
+      gap:12px;
       flex-wrap:wrap;
-      margin:10px 0;
+      margin:12px 0;
     }
 
-    .two{
+    .grid2{
       display:grid;
       grid-template-columns:1fr 1fr;
-      gap:10px;
+      gap:12px;
       width:100%;
     }
-    .two > button{ width:100% }
 
-    input, textarea, button{
-      border-radius:var(--radiusIn);
-      border:1px solid var(--line);
+    .grid2 > *{width:100%}
+
+    input,textarea,button,label{
+      border-radius:var(--r);
+      border:1px solid rgba(255,255,255,.12);
+      background:var(--field);
       color:var(--fg);
-      padding:12px 14px;
+      padding:13px 14px;
       font-size:14px;
       outline:none;
-      transition:
-        transform .12s ease,
-        border-color .16s ease,
-        box-shadow .16s ease,
-        background .16s ease,
-        filter .16s ease;
-    }
-
-    input, textarea{
-      background: linear-gradient(180deg, rgba(10,14,24,.64), rgba(6,8,14,.55));
-      box-shadow: inset 0 1px 0 rgba(255,255,255,.06);
-      flex:1;
-      min-width:240px;
+      transition:transform .14s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease,filter .18s ease;
     }
 
     textarea{
@@ -166,180 +180,275 @@
       line-height:1.35;
     }
 
-    input:focus, textarea:focus{
-      border-color: rgba(90,160,255,.55);
-      box-shadow:
-        0 0 0 3px rgba(60,140,255,.14),
-        inset 0 1px 0 rgba(255,255,255,.06);
+    input,textarea{flex:1;min-width:240px}
+    input::placeholder,textarea::placeholder{color:rgba(238,242,255,.42)}
+
+    input:focus,textarea:focus{
+      border-color:rgba(180,210,255,.22);
+      box-shadow:0 0 0 3px rgba(120,170,255,.10);
     }
 
-    .mini{
-      flex:0;
-      min-width:190px;
-    }
-
-    .pwwrap{
-      display:flex;
-      gap:10px;
-      flex:1;
-      min-width:260px;
-    }
-    .pwwrap input{
-      flex:1;
-      min-width:0;
-    }
-    .pwbtn{
-      flex:0;
-      min-width:120px;
-    }
-
-    .btn{
-      background:
-        linear-gradient(135deg, rgba(42,114,255,.95), rgba(0,214,199,.92) 55%, rgba(122,92,255,.88));
-      border-color: rgba(255,255,255,.14);
-      box-shadow:
-        0 10px 26px rgba(0,0,0,.35),
-        inset 0 1px 0 rgba(255,255,255,.10);
+    button,label{
       cursor:pointer;
       user-select:none;
-      position:relative;
-      overflow:hidden;
-      transform: translateZ(0);
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:8px;
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(0,0,0,.28));
     }
 
-    .btn::before{
-      content:"";
-      position:absolute;
-      inset:-1px;
-      background:
-        radial-gradient(60% 120% at 10% 0%, rgba(255,255,255,.22), transparent 55%),
-        radial-gradient(70% 140% at 100% 40%, rgba(255,255,255,.10), transparent 60%);
-      opacity:.55;
-      pointer-events:none;
+    button:hover,label:hover{
+      border-color:rgba(230,235,255,.18);
+      box-shadow:0 14px 28px rgba(0,0,0,.44),0 0 0 3px rgba(120,170,255,.06);
+      transform:translateY(-1px);
+      filter:saturate(1.04);
     }
 
-    .btn:hover{
-      filter: brightness(1.05) saturate(1.05);
-      box-shadow:
-        0 12px 30px rgba(0,0,0,.42),
-        0 0 0 3px rgba(60,140,255,.10),
-        inset 0 1px 0 rgba(255,255,255,.12);
-      transform: translateY(-1px);
-    }
+    button:active,label:active{transform:translateY(1px) scale(.99)}
 
-    .btn:active{
-      transform: translateY(1px) scale(.99);
-      filter: brightness(0.98);
-      box-shadow:
-        0 8px 18px rgba(0,0,0,.35),
-        inset 0 1px 0 rgba(255,255,255,.08);
-    }
-
-    .btn.pill{
+    .pill{
       padding:9px 12px;
       border-radius:999px;
       font-size:12px;
-      letter-spacing:.2px;
       white-space:nowrap;
+      background:linear-gradient(135deg, rgba(255,255,255,.06), rgba(0,0,0,.32));
+      border-color:rgba(255,255,255,.14);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.07);
     }
 
-    .btn:disabled,
-    .disabled{
-      opacity:.45;
-      pointer-events:none;
-      filter:saturate(.8) grayscale(.1);
+    .btnG{
+      background:linear-gradient(135deg, rgba(32,42,64,.92), rgba(16,22,34,.92), rgba(10,12,18,.94));
+      border-color:rgba(255,255,255,.14);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.08);
+    }
+
+    .btnSoft{
+      background:linear-gradient(135deg, rgba(255,255,255,.05), rgba(0,0,0,.30));
+    }
+
+    .danger{
+      background:linear-gradient(135deg, rgba(28,34,52,.92), rgba(12,14,22,.95), rgba(0,0,0,.35));
+      border-color:rgba(255,255,255,.12);
+    }
+
+    .mini{flex:0;min-width:190px}
+    .pwwrap{display:flex;gap:12px;flex:1;min-width:260px}
+    .pwwrap input{flex:1;min-width:0}
+    .pwbtn{flex:0;min-width:130px}
+
+    .filemeta{
+      flex:1 1 auto;
+      min-width:240px;
+      padding:13px 14px;
+      border-radius:var(--r);
+      border:1px solid rgba(255,255,255,.10);
+      background:var(--field);
+      color:rgba(238,242,255,.78);
+    }
+
+    .mono{
+      font-variant-ligatures:none;
+      font-feature-settings:"liga" 0;
+      letter-spacing:.15px;
+      word-break:break-word;
     }
 
     .toast{
       position:fixed;
       left:50%;
-      bottom:28px;
+      bottom:22px;
       transform:translateX(-50%);
-      background:rgba(0,0,0,.78);
-      border:1px solid rgba(255,255,255,.16);
+      background:rgba(0,0,0,.74);
+      border:1px solid rgba(255,255,255,.18);
       padding:10px 14px;
       border-radius:12px;
       font-size:13px;
       opacity:0;
       pointer-events:none;
-      transition:opacity .18s ease, transform .18s ease;
+      transition:opacity .18s ease,transform .18s ease;
       box-shadow:0 12px 26px var(--shadow);
-      z-index:10;
-    }
-    .toast.show{
-      opacity:1;
-      transform:translateX(-50%) translateY(-2px);
+      z-index:30;
     }
 
-    @media (max-width: 420px){
+    .toast.show{opacity:1;transform:translateX(-50%) translateY(-2px)}
+    .disabled{opacity:.45;pointer-events:none;filter:saturate(.75)}
+
+    .modal{
+      position:fixed;
+      inset:0;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      z-index:40;
+      padding:18px;
+    }
+
+    .modal.show{display:flex}
+
+    .modal .backdrop{
+      position:absolute;
+      inset:0;
+      background:rgba(0,0,0,.62);
+      backdrop-filter:blur(6px);
+      -webkit-backdrop-filter:blur(6px);
+    }
+
+    .modal .card{
+      position:relative;
+      width:min(760px, 94vw);
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.14);
+      background:
+        radial-gradient(140% 160% at 20% 18%, rgba(255,255,255,.05), transparent 55%),
+        radial-gradient(140% 160% at 88% 20%, rgba(255,255,255,.035), transparent 55%),
+        linear-gradient(180deg, rgba(255,255,255,.045), rgba(0,0,0,.50));
+      box-shadow:0 30px 80px rgba(0,0,0,.70);
+      overflow:hidden;
+    }
+
+    .modal .content{position:relative;padding:18px}
+    .modal h2{margin:0 0 12px;font-size:15px;letter-spacing:.2px;opacity:.92}
+    .modal textarea{min-height:140px;width:100%;background:rgba(0,0,0,.34);border-color:rgba(255,255,255,.14)}
+    .modal .actions{
+      display:flex;
+      gap:12px;
+      justify-content:flex-end;
+      margin-top:14px;
+      flex-wrap:wrap;
+    }
+    .modal .actions button{min-width:130px}
+
+    @media (max-width:420px){
       input,textarea{min-width:0}
       .mini{min-width:0;flex:1}
       .pwbtn{min-width:110px}
       .pwwrap{min-width:0}
+      body{padding:14px 0}
+      .wrap{padding:0 14px 14px}
+      .content{padding:16px}
+      textarea{min-height:150px}
     }
   </style>
 </head>
-
 <body>
-  <div class="box">
-    <div class="top">
-      <h1>AES-256-GCM</h1>
-      <div class="right">
-        <button id="btnSafe" class="btn pill">BẢO MẬT : TẮT</button>
+  <div class="glow" aria-hidden="true"></div>
+
+  <div id="snowLayer" class="snowLayer" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <div class="shell">
+      <div class="appbar">
+        <div class="brand">
+          <div class="t">AES-256-GCM</div>
+        </div>
+        <div class="actions">
+          <button id="btnSafe" class="pill">BẢO MẬT : TẮT</button>
+        </div>
       </div>
-    </div>
 
-    <div class="row">
-      <input id="plain" placeholder="Văn bản gốc" value="" autocomplete="off" />
-      <input id="iters" class="mini" type="number" value="100000" min="100000" step="100000" inputmode="numeric" />
-    </div>
+      <div class="content">
+        <div class="row">
+          <input id="plain" placeholder="Văn bản gốc" value="" autocomplete="off" />
+          <input id="iters" class="mini" type="number" value="100000" min="100000" step="100000" inputmode="numeric" />
+        </div>
 
-    <div class="row">
-      <div class="pwwrap">
-        <input id="pass" type="password" placeholder="Mật khẩu" autocomplete="new-password" />
-        <button id="btnTogglePass" class="btn pwbtn">HIỆN</button>
+        <div class="row">
+          <div class="pwwrap">
+            <input id="pass" type="password" placeholder="Mật khẩu" autocomplete="new-password" />
+            <button id="btnTogglePass" class="pwbtn btnSoft">HIỆN</button>
+          </div>
+        </div>
+
+        <div class="row grid2">
+          <button id="btnEncrypt" class="btnG">MÃ HOÁ</button>
+          <button id="btnDecrypt" class="btnSoft">GIẢI MÃ</button>
+        </div>
+
+        <div class="row grid2">
+          <label for="file" id="btnPick" class="btnG">CHỌN FILE</label>
+          <button id="btnDownload" class="btnSoft">TẢI FILE</button>
+        </div>
+
+        <div class="row">
+          <input id="file" type="file" hidden />
+          <div id="filemeta" class="filemeta mono">Chưa chọn file</div>
+        </div>
+
+        <div class="row">
+          <textarea id="token" class="mono" spellcheck="false" placeholder="Token mã hoá (v3... hoặc v3f...)"></textarea>
+        </div>
+
+        <div class="row grid2">
+          <button id="btnCopy" class="btnSoft">SAO CHÉP</button>
+          <button id="btnClear" class="danger">XOÁ</button>
+        </div>
+
+        <div class="row">
+          <input id="out" placeholder="Kết quả" autocomplete="off" />
+        </div>
       </div>
-    </div>
-
-    <div class="row two">
-      <button id="btnEnc" class="btn">MÃ HOÁ</button>
-      <button id="btnDec" class="btn">GIẢI MÃ</button>
-    </div>
-
-    <div class="row">
-      <textarea id="token" spellcheck="false" placeholder="Token mã hoá"></textarea>
-    </div>
-
-    <div class="row two">
-      <button id="btnCopy" class="btn">SAO CHÉP</button>
-      <button id="btnClear" class="btn">XOÁ</button>
-    </div>
-
-    <div class="row">
-      <input id="out" placeholder="Kết quả" autocomplete="off" />
     </div>
   </div>
 
   <div id="toast" class="toast">OK</div>
 
+  <div id="modalPlain" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="backdrop"></div>
+    <div class="card">
+      <div class="content">
+        <h2>Nhập văn bản gốc</h2>
+        <textarea id="modalPlainText" spellcheck="false" placeholder="Nhập nội dung..."></textarea>
+        <div class="actions">
+          <button id="modalPlainCancel">Huỷ</button>
+          <button id="modalPlainOk" class="btnG">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalOut" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="backdrop"></div>
+    <div class="card">
+      <div class="content">
+        <h2>Kết quả</h2>
+        <textarea id="modalOutText" spellcheck="false" readonly></textarea>
+        <div class="actions">
+          <button id="modalOutCopy">Sao chép</button>
+          <button id="modalOutClose" class="btnG">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script>
   const $ = (id) => document.getElementById(id);
-
   const enc = new TextEncoder();
   const dec = new TextDecoder();
 
-  const b64url = (u8) =>
-    btoa(String.fromCharCode(...u8))
-      .replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  const u8ToB64 = (u8) => {
+    const CHUNK = 0x8000;
+    let s = "";
+    for (let i = 0; i < u8.length; i += CHUNK) s += String.fromCharCode.apply(null, u8.subarray(i, i + CHUNK));
+    return btoa(s);
+  };
 
-  const b64urlToU8 = (s) => {
-    s = s.replace(/-/g,'+').replace(/_/g,'/');
-    s += '='.repeat((4 - (s.length % 4)) % 4);
-    const bin = atob(s);
+  const b64ToU8 = (b64) => {
+    const bin = atob(b64);
     const u8 = new Uint8Array(bin.length);
-    for (let i=0;i<bin.length;i++) u8[i] = bin.charCodeAt(i);
+    for (let i = 0; i < bin.length; i++) u8[i] = bin.charCodeAt(i);
     return u8;
   };
+
+  const b64url = (u8) => u8ToB64(u8).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
+  const b64urlToU8 = (s) => {
+    s = (s || "").replace(/-/g,'+').replace(/_/g,'/');
+    s += '='.repeat((4 - (s.length % 4)) % 4);
+    return b64ToU8(s);
+  };
+
+  const strToB64url = (s) => b64url(enc.encode(s));
+  const b64urlToStr = (s) => dec.decode(b64urlToU8(s));
 
   const getIters = () => {
     const n = parseInt($("iters").value || "100000", 10);
@@ -354,12 +463,7 @@
   }
 
   let SAFE_MODE = false;
-
-  const disableInSafeMode = [
-    "plain",
-    "btnTogglePass",
-    "out"
-  ];
+  const disableInSafeMode = ["plain","btnTogglePass","out"];
 
   function setDisabled(id, on){
     const el = $(id);
@@ -371,143 +475,298 @@
 
   function applySafeMode(){
     $("btnSafe").textContent = `BẢO MẬT : ${SAFE_MODE ? "BẬT" : "TẮT"}`;
-
     if (SAFE_MODE) {
       $("plain").value = "";
       $("out").value = "";
-      $("pass").value = "";
-
       $("pass").type = "password";
       $("btnTogglePass").textContent = "HIỆN";
-
       disableInSafeMode.forEach(id => setDisabled(id, true));
-
-      $("plain").placeholder = "Văn bản gốc";
-      $("out").placeholder = "Kết quả";
-
       toast("Đã bật bảo mật");
     } else {
       disableInSafeMode.forEach(id => setDisabled(id, false));
-      $("plain").placeholder = "Văn bản gốc";
-      $("out").placeholder = "Kết quả";
       toast("Đã tắt bảo mật");
     }
   }
 
   async function deriveAesKeyFromPass(pass, saltU8, iters) {
-    const passKey = await crypto.subtle.importKey(
-      "raw",
-      enc.encode(pass),
-      { name: "PBKDF2" },
-      false,
-      ["deriveKey"]
-    );
-
+    const passKey = await crypto.subtle.importKey("raw", enc.encode(pass), { name:"PBKDF2" }, false, ["deriveKey"]);
     return crypto.subtle.deriveKey(
-      { name: "PBKDF2", salt: saltU8, iterations: iters, hash: "SHA-256" },
+      { name:"PBKDF2", salt:saltU8, iterations:iters, hash:"SHA-256" },
       passKey,
-      { name: "AES-GCM", length: 256 },
+      { name:"AES-GCM", length:256 },
       false,
-      ["encrypt", "decrypt"]
+      ["encrypt","decrypt"]
     );
   }
 
-  function getPlaintextForEncrypt(){
-    if (!SAFE_MODE) return $("plain").value;
-    const v = prompt("Nhập văn bản gốc để mã hoá:", "");
-    return (v ?? "").trim();
+  function modalOpen(id){
+    const m = $(id);
+    m.classList.add("show");
+    m.setAttribute("aria-hidden","false");
+  }
+  function modalClose(id){
+    const m = $(id);
+    m.classList.remove("show");
+    m.setAttribute("aria-hidden","true");
   }
 
-  function setOutputAfterDecrypt(text){
-    if (SAFE_MODE) {
-      $("out").value = "";
-      alert(text);
-    } else {
-      $("out").value = text;
-    }
+  function showModalPlain(){
+    return new Promise((resolve) => {
+      const mId = "modalPlain";
+      const m = $(mId);
+      const t = $("modalPlainText");
+      const ok = $("modalPlainOk");
+      const cancel = $("modalPlainCancel");
+      const backdrop = m.querySelector(".backdrop");
+
+      const cleanup = () => {
+        ok.removeEventListener("click", onOk);
+        cancel.removeEventListener("click", onCancel);
+        backdrop.removeEventListener("click", onCancel);
+        document.removeEventListener("keydown", onKey);
+      };
+
+      const finish = (val) => {
+        cleanup();
+        modalClose(mId);
+        resolve(val);
+      };
+
+      const onOk = () => finish((t.value ?? "").trim());
+      const onCancel = () => finish("");
+      const onKey = (e) => {
+        if (e.key === "Escape") onCancel();
+        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") onOk();
+      };
+
+      t.value = "";
+      modalOpen(mId);
+      setTimeout(()=>t.focus(), 40);
+
+      ok.addEventListener("click", onOk);
+      cancel.addEventListener("click", onCancel);
+      backdrop.addEventListener("click", onCancel);
+      document.addEventListener("keydown", onKey);
+    });
   }
 
-  function clearSensitive(){
-    $("pass").value = "";
+  async function showModalOut(text){
+    const mId = "modalOut";
+    const m = $(mId);
+    const t = $("modalOutText");
+    const close = $("modalOutClose");
+    const copy = $("modalOutCopy");
+    const backdrop = m.querySelector(".backdrop");
+
+    const cleanup = () => {
+      close.removeEventListener("click", onClose);
+      copy.removeEventListener("click", onCopy);
+      backdrop.removeEventListener("click", onClose);
+      document.removeEventListener("keydown", onKey);
+    };
+
+    const onClose = () => { cleanup(); modalClose(mId); };
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+
+    const onCopy = async () => {
+      try{
+        await navigator.clipboard.writeText(text || "");
+        toast("Đã sao chép");
+      }catch{
+        t.focus(); t.select();
+        document.execCommand("copy");
+        toast("Đã sao chép");
+      }
+    };
+
+    t.value = text || "";
+    modalOpen(mId);
+    setTimeout(()=>t.focus(), 40);
+
+    close.addEventListener("click", onClose);
+    copy.addEventListener("click", onCopy);
+    backdrop.addEventListener("click", onClose);
+    document.addEventListener("keydown", onKey);
+  }
+
+  async function getPlaintextForEncrypt(){
+    if (!SAFE_MODE) return ($("plain").value || "").trim();
+    return await showModalPlain();
+  }
+
+  function clearSensitiveAfterUse(){
+    if (SAFE_MODE) $("pass").value = "";
     if (SAFE_MODE) $("plain").value = "";
   }
 
-  async function encrypt() {
-    try {
-      const plain = getPlaintextForEncrypt();
-      const pass = $("pass").value;
+  let SELECTED_FILE = null;
+  let LAST_DECRYPTED_FILE = null;
 
-      if (!plain) throw new Error("Bạn chưa nhập văn bản gốc.");
-      if (!pass || pass.length < 10) throw new Error("Mật khẩu quá yếu.");
+  $("file").addEventListener("change", () => {
+    const f = $("file").files && $("file").files[0];
+    SELECTED_FILE = f || null;
+    if (!SELECTED_FILE) {
+      $("filemeta").textContent = "Chưa chọn file";
+      return;
+    }
+    const kb = SELECTED_FILE.size / 1024;
+    const s = kb < 1024 ? `${kb.toFixed(1)} KB` : `${(kb/1024).toFixed(2)} MB`;
+    $("filemeta").textContent = `${SELECTED_FILE.name} • ${s} • ${SELECTED_FILE.type || "application/octet-stream"}`;
+  });
 
-      const iters = getIters();
-      const salt = crypto.getRandomValues(new Uint8Array(16));
-      const nonce = crypto.getRandomValues(new Uint8Array(12));
+  async function encryptText(){
+    const plain = await getPlaintextForEncrypt();
+    const pass = $("pass").value;
 
-      const aesKey = await deriveAesKeyFromPass(pass, salt, iters);
+    if (!plain) throw new Error("Bạn chưa nhập văn bản gốc.");
+    if (!pass || pass.length < 10) throw new Error("Mật khẩu quá yếu.");
 
-      const ctAll = new Uint8Array(await crypto.subtle.encrypt(
-        { name: "AES-GCM", iv: nonce },
-        aesKey,
-        enc.encode(plain)
-      ));
+    const iters = getIters();
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const nonce = crypto.getRandomValues(new Uint8Array(12));
+    const aesKey = await deriveAesKeyFromPass(pass, salt, iters);
 
-      const ciphertext = ctAll.slice(0, ctAll.length - 16);
-      const tag = ctAll.slice(ctAll.length - 16);
+    const ctAll = new Uint8Array(await crypto.subtle.encrypt({ name:"AES-GCM", iv: nonce }, aesKey, enc.encode(plain)));
+    const ciphertext = ctAll.slice(0, ctAll.length - 16);
+    const tag = ctAll.slice(ctAll.length - 16);
 
-      $("token").value = `v3.${iters}.${b64url(salt)}.${b64url(nonce)}.${b64url(ciphertext)}.${b64url(tag)}`;
+    $("token").value = `v3.${iters}.${b64url(salt)}.${b64url(nonce)}.${b64url(ciphertext)}.${b64url(tag)}`;
+    clearSensitiveAfterUse();
+    toast("Đã mã hoá");
+  }
 
-      clearSensitive();
-      toast("Đã mã hoá");
-    } catch (e) {
+  async function encryptFile(){
+    if (!SELECTED_FILE) throw new Error("Bạn chưa chọn file.");
+    const pass = $("pass").value;
+    if (!pass || pass.length < 10) throw new Error("Mật khẩu quá yếu.");
+
+    const iters = getIters();
+    const salt = crypto.getRandomValues(new Uint8Array(16));
+    const nonce = crypto.getRandomValues(new Uint8Array(12));
+    const aesKey = await deriveAesKeyFromPass(pass, salt, iters);
+
+    const buf = await SELECTED_FILE.arrayBuffer();
+    const data = new Uint8Array(buf);
+
+    const ctAll = new Uint8Array(await crypto.subtle.encrypt({ name:"AES-GCM", iv: nonce }, aesKey, data));
+    const ciphertext = ctAll.slice(0, ctAll.length - 16);
+    const tag = ctAll.slice(ctAll.length - 16);
+
+    const nameB64 = strToB64url(SELECTED_FILE.name);
+    const mimeB64 = strToB64url(SELECTED_FILE.type || "application/octet-stream");
+
+    $("token").value = `v3f.${iters}.${b64url(salt)}.${b64url(nonce)}.${nameB64}.${mimeB64}.${b64url(ciphertext)}.${b64url(tag)}`;
+    clearSensitiveAfterUse();
+    toast("Đã mã hoá file");
+  }
+
+  async function encryptUnified(){
+    try{
+      if (SELECTED_FILE) await encryptFile();
+      else await encryptText();
+    }catch(e){
       toast("Có lỗi");
       if (!SAFE_MODE) $("out").value = "Mã hoá thất bại: " + (e?.message || e);
     }
   }
 
-  async function decrypt() {
-    try {
-      const pass = $("pass").value.trim();
-      const token = $("token").value.trim();
+  async function decryptAny(){
+    try{
+      const pass = ($("pass").value || "").trim();
+      const token = ($("token").value || "").trim();
 
       if (!pass) throw new Error("Bạn chưa nhập mật khẩu.");
       if (!token) throw new Error("Bạn chưa dán token.");
 
       const parts = token.split(".");
-      if (parts.length !== 6 || parts[0] !== "v3") throw new Error("Token không đúng định dạng.");
+      const ver = parts[0];
 
-      const iters = parseInt(parts[1], 10);
-      if (!Number.isFinite(iters) || iters < 100000) throw new Error("Iterations trong token không hợp lệ.");
+      if (ver === "v3") {
+        if (parts.length !== 6) throw new Error("Token v3 không đúng định dạng.");
 
-      const salt = b64urlToU8(parts[2]);
-      const nonce = b64urlToU8(parts[3]);
-      const ciphertext = b64urlToU8(parts[4]);
-      const tag = b64urlToU8(parts[5]);
+        const iters = parseInt(parts[1], 10);
+        if (!Number.isFinite(iters) || iters < 100000) throw new Error("Iterations không hợp lệ.");
 
-      const aesKey = await deriveAesKeyFromPass(pass, salt, iters);
+        const salt = b64urlToU8(parts[2]);
+        const nonce = b64urlToU8(parts[3]);
+        const ciphertext = b64urlToU8(parts[4]);
+        const tag = b64urlToU8(parts[5]);
 
-      const ctAll = new Uint8Array(ciphertext.length + tag.length);
-      ctAll.set(ciphertext, 0);
-      ctAll.set(tag, ciphertext.length);
+        const aesKey = await deriveAesKeyFromPass(pass, salt, iters);
 
-      const pt = new Uint8Array(await crypto.subtle.decrypt(
-        { name: "AES-GCM", iv: nonce },
-        aesKey,
-        ctAll
-      ));
+        const ctAll = new Uint8Array(ciphertext.length + tag.length);
+        ctAll.set(ciphertext, 0);
+        ctAll.set(tag, ciphertext.length);
 
-      const text = dec.decode(pt);
-      setOutputAfterDecrypt(text);
-      clearSensitive();
-      toast("Đã giải mã");
-    } catch (e) {
+        const pt = new Uint8Array(await crypto.subtle.decrypt({ name:"AES-GCM", iv: nonce }, aesKey, ctAll));
+        const text = dec.decode(pt);
+
+        LAST_DECRYPTED_FILE = null;
+
+        if (SAFE_MODE) { $("out").value = ""; await showModalOut(text); }
+        else $("out").value = text;
+
+        clearSensitiveAfterUse();
+        toast("Đã giải mã");
+        return;
+      }
+
+      if (ver === "v3f") {
+        if (parts.length !== 8) throw new Error("Token v3f không đúng định dạng.");
+
+        const iters = parseInt(parts[1], 10);
+        if (!Number.isFinite(iters) || iters < 100000) throw new Error("Iterations không hợp lệ.");
+
+        const salt = b64urlToU8(parts[2]);
+        const nonce = b64urlToU8(parts[3]);
+        const fileName = b64urlToStr(parts[4]);
+        const mime = b64urlToStr(parts[5]);
+        const ciphertext = b64urlToU8(parts[6]);
+        const tag = b64urlToU8(parts[7]);
+
+        const aesKey = await deriveAesKeyFromPass(pass, salt, iters);
+
+        const ctAll = new Uint8Array(ciphertext.length + tag.length);
+        ctAll.set(ciphertext, 0);
+        ctAll.set(tag, ciphertext.length);
+
+        const pt = new Uint8Array(await crypto.subtle.decrypt({ name:"AES-GCM", iv: nonce }, aesKey, ctAll));
+        LAST_DECRYPTED_FILE = { name: fileName || "file.bin", mime: mime || "application/octet-stream", bytes: pt };
+
+        const msg = `Đã giải mã file: ${LAST_DECRYPTED_FILE.name} (${LAST_DECRYPTED_FILE.bytes.length} bytes)`;
+
+        if (SAFE_MODE) { $("out").value = ""; await showModalOut(msg); }
+        else $("out").value = msg;
+
+        clearSensitiveAfterUse();
+        toast("Đã giải mã file");
+        return;
+      }
+
+      throw new Error("Token không hỗ trợ (chỉ v3 hoặc v3f).");
+    }catch(e){
       toast("Có lỗi");
       if (!SAFE_MODE) $("out").value = "Giải mã thất bại: " + (e?.message || e);
+      LAST_DECRYPTED_FILE = null;
     }
   }
 
+  function downloadDecryptedFile(){
+    if (!LAST_DECRYPTED_FILE) return toast("Chưa có file để tải");
+    const blob = new Blob([LAST_DECRYPTED_FILE.bytes], { type: LAST_DECRYPTED_FILE.mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = LAST_DECRYPTED_FILE.name;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url), 1500);
+    toast("Đang tải file");
+  }
+
   async function copyToken(){
-    const token = $("token").value.trim();
+    const token = ($("token").value || "").trim();
     if (!token) return toast("Chưa có token");
     try{
       await navigator.clipboard.writeText(token);
@@ -522,9 +781,13 @@
 
   function clearAll(){
     if (SAFE_MODE) $("plain").value = "";
-    $("pass").value = "";
     $("token").value = "";
     $("out").value = "";
+    SELECTED_FILE = null;
+    $("file").value = "";
+    $("filemeta").textContent = "Chưa chọn file";
+    LAST_DECRYPTED_FILE = null;
+    if (SAFE_MODE) $("pass").value = "";
     toast("Đã xoá");
   }
 
@@ -536,8 +799,49 @@
     $("btnTogglePass").textContent = isPw ? "ẨN" : "HIỆN";
   }
 
-  $("btnEnc").addEventListener("click", encrypt);
-  $("btnDec").addEventListener("click", decrypt);
+  function makeSnow(count){
+    const layer = $("snowLayer");
+    layer.innerHTML = "";
+    const w = Math.max(320, window.innerWidth || 360);
+
+    for (let i=0;i<count;i++){
+      const s = document.createElement("span");
+      s.className = "snow";
+      const size = (Math.random() * 2.2) + 1.0;
+      const left = Math.random() * 100;
+      const dur = 5 + Math.random() * 8.5;
+      const delay = Math.random() * 10;
+      const drift = (Math.random() * 120 - 60) + "px";
+      const op = 0.35 + Math.random() * 0.65;
+
+      s.style.width = size + "px";
+      s.style.height = size + "px";
+      s.style.left = left + "vw";
+      s.style.opacity = op.toFixed(3);
+      s.style.setProperty("--drift", drift);
+      s.style.animationDuration = dur.toFixed(2) + "s";
+      s.style.animationDelay = (-delay).toFixed(2) + "s";
+      s.style.filter = size > 2.6 ? "drop-shadow(0 0 10px rgba(200,220,255,.14))" : "none";
+
+      layer.appendChild(s);
+    }
+  }
+
+  function calcSnowCount(){
+    const w = Math.max(320, window.innerWidth || 360);
+    const h = Math.max(480, window.innerHeight || 700);
+    const base = Math.round((w * h) / 18000);
+    return Math.min(160, Math.max(70, base));
+  }
+
+  let snowTimer = null;
+  function refreshSnow(){
+    makeSnow(calcSnowCount());
+  }
+
+  $("btnEncrypt").addEventListener("click", encryptUnified);
+  $("btnDecrypt").addEventListener("click", decryptAny);
+  $("btnDownload").addEventListener("click", downloadDecryptedFile);
   $("btnCopy").addEventListener("click", copyToken);
   $("btnClear").addEventListener("click", clearAll);
   $("btnTogglePass").addEventListener("click", togglePass);
@@ -548,6 +852,12 @@
   });
 
   applySafeMode();
+  refreshSnow();
+
+  window.addEventListener("resize", () => {
+    clearTimeout(snowTimer);
+    snowTimer = setTimeout(refreshSnow, 180);
+  }, { passive:true });
 </script>
 </body>
 </html>
