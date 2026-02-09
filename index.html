@@ -7,40 +7,168 @@
   <style>
     :root{--bg0:#030305;--bg2:#0b0e14;--fg:#f3f4f7;--line:rgba(255,255,255,.10);--shadow:rgba(0,0,0,.78);--r:12px}
     *{box-sizing:border-box}
-    body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;color:var(--fg);font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;overflow:hidden;background:radial-gradient(1200px 900px at 18% 10%, rgba(120,170,255,.09), transparent 62%),radial-gradient(900px 700px at 86% 18%, rgba(140,120,255,.06), transparent 60%),radial-gradient(900px 700px at 50% 92%, rgba(110,220,255,.05), transparent 64%),linear-gradient(180deg,var(--bg0),var(--bg2))}
-    .sky{position:fixed;inset:0;pointer-events:none;z-index:0;opacity:.9;background:radial-gradient(1000px 700px at 25% 20%, rgba(255,255,255,.05), transparent 65%),radial-gradient(900px 680px at 78% 30%, rgba(255,255,255,.03), transparent 65%),radial-gradient(800px 650px at 55% 85%, rgba(255,255,255,.025), transparent 70%)}
-    .sky::before{content:"";position:absolute;inset:0;opacity:.72;background-image:radial-gradient(1px 1px at 8% 12%, rgba(255,255,255,.95), transparent 60%),radial-gradient(1px 1px at 16% 28%, rgba(255,255,255,.70), transparent 60%),radial-gradient(1px 1px at 22% 76%, rgba(255,255,255,.75), transparent 60%),radial-gradient(1px 1px at 31% 44%, rgba(255,255,255,.65), transparent 60%),radial-gradient(1px 1px at 38% 18%, rgba(255,255,255,.60), transparent 60%),radial-gradient(1px 1px at 44% 62%, rgba(255,255,255,.80), transparent 60%),radial-gradient(1px 1px at 52% 26%, rgba(255,255,255,.70), transparent 60%),radial-gradient(1px 1px at 58% 78%, rgba(255,255,255,.65), transparent 60%),radial-gradient(1px 1px at 64% 48%, rgba(255,255,255,.62), transparent 60%),radial-gradient(1px 1px at 71% 22%, rgba(255,255,255,.60), transparent 60%),radial-gradient(1px 1px at 78% 66%, rgba(255,255,255,.78), transparent 60%),radial-gradient(1px 1px at 86% 38%, rgba(255,255,255,.62), transparent 60%),radial-gradient(1px 1px at 92% 18%, rgba(255,255,255,.58), transparent 60%),radial-gradient(1px 1px at 94% 74%, rgba(255,255,255,.66), transparent 60%)}
-    .wrap{position:relative;z-index:2;width:min(980px,92vw);padding:20px}
-    .box{width:100%;border-radius:18px;background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.03));border:1px solid rgba(255,255,255,.10);box-shadow:0 26px 70px rgba(0,0,0,.62), inset 0 1px 0 rgba(255,255,255,.055);backdrop-filter:blur(10px);overflow:hidden;position:relative}
-    .inner{position:relative;padding:20px}
-    .top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px}
-    h1{margin:0;font-size:16px;letter-spacing:.55px;opacity:.95;text-transform:uppercase}
-    .right{display:flex;gap:10px;align-items:center}
-    .row{display:flex;gap:12px;flex-wrap:wrap;margin:12px 0}
-    .two{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:100%}
+    html,body{height:100%}
+    body{
+      margin:0;
+      min-height:100%;
+      padding:22px 0;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      color:var(--fg);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial;
+      overflow:auto;
+      -webkit-overflow-scrolling:touch;
+      background:
+        radial-gradient(1200px 900px at 18% 10%, rgba(120,170,255,.09), transparent 62%),
+        radial-gradient(900px 700px at 86% 18%, rgba(140,120,255,.06), transparent 60%),
+        radial-gradient(900px 700px at 50% 92%, rgba(110,220,255,.05), transparent 64%),
+        linear-gradient(180deg,var(--bg0),var(--bg2));
+    }
+    .sky{
+      position:fixed; inset:0;
+      pointer-events:none;
+      z-index:0;
+      opacity:.9;
+      background:
+        radial-gradient(1000px 700px at 25% 20%, rgba(255,255,255,.05), transparent 65%),
+        radial-gradient(900px 680px at 78% 30%, rgba(255,255,255,.03), transparent 65%),
+        radial-gradient(800px 650px at 55% 85%, rgba(255,255,255,.025), transparent 70%);
+    }
+    .sky::before{
+      content:"";
+      position:absolute; inset:0;
+      opacity:.72;
+      background-image:
+        radial-gradient(1px 1px at 8% 12%, rgba(255,255,255,.95), transparent 60%),
+        radial-gradient(1px 1px at 16% 28%, rgba(255,255,255,.70), transparent 60%),
+        radial-gradient(1px 1px at 22% 76%, rgba(255,255,255,.75), transparent 60%),
+        radial-gradient(1px 1px at 31% 44%, rgba(255,255,255,.65), transparent 60%),
+        radial-gradient(1px 1px at 38% 18%, rgba(255,255,255,.60), transparent 60%),
+        radial-gradient(1px 1px at 44% 62%, rgba(255,255,255,.80), transparent 60%),
+        radial-gradient(1px 1px at 52% 26%, rgba(255,255,255,.70), transparent 60%),
+        radial-gradient(1px 1px at 58% 78%, rgba(255,255,255,.65), transparent 60%),
+        radial-gradient(1px 1px at 64% 48%, rgba(255,255,255,.62), transparent 60%),
+        radial-gradient(1px 1px at 71% 22%, rgba(255,255,255,.60), transparent 60%),
+        radial-gradient(1px 1px at 78% 66%, rgba(255,255,255,.78), transparent 60%),
+        radial-gradient(1px 1px at 86% 38%, rgba(255,255,255,.62), transparent 60%),
+        radial-gradient(1px 1px at 92% 18%, rgba(255,255,255,.58), transparent 60%),
+        radial-gradient(1px 1px at 94% 74%, rgba(255,255,255,.66), transparent 60%);
+    }
+    .wrap{position:relative; z-index:2; width:min(980px,92vw); padding:0 18px 18px}
+    .box{
+      width:100%;
+      border-radius:18px;
+      background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.03));
+      border:1px solid rgba(255,255,255,.10);
+      box-shadow:0 26px 70px rgba(0,0,0,.62), inset 0 1px 0 rgba(255,255,255,.055);
+      backdrop-filter:blur(10px);
+      overflow:hidden;
+      position:relative;
+    }
+    .inner{position:relative; padding:20px}
+    .top{display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:14px; flex-wrap:nowrap}
+    h1{
+      margin:0; font-size:16px; letter-spacing:.55px; opacity:.95; text-transform:uppercase;
+      flex:1 1 auto; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    }
+    .right{display:flex; gap:10px; align-items:center; justify-content:flex-end; flex:0 0 auto}
+    .row{display:flex; gap:12px; flex-wrap:wrap; margin:12px 0}
+    .two{display:grid; grid-template-columns:1fr 1fr; gap:12px; width:100%}
     .two>button{width:100%}
-    input,textarea,button,label{border-radius:var(--r);border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.30);color:var(--fg);padding:13px 14px;font-size:14px;outline:none;transition:transform .14s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease,filter .18s ease}
-    textarea{width:100%;min-height:160px;resize:vertical;line-height:1.35}
-    input,textarea{flex:1;min-width:240px}
+    input,textarea,button,label{
+      border-radius:var(--r);
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(0,0,0,.30);
+      color:var(--fg);
+      padding:13px 14px;
+      font-size:14px;
+      outline:none;
+      transition:transform .14s ease,border-color .18s ease,background .18s ease,box-shadow .18s ease,filter .18s ease;
+    }
+    textarea{width:100%; min-height:160px; resize:vertical; line-height:1.35}
+    input,textarea{flex:1; min-width:240px}
     input::placeholder,textarea::placeholder{color:rgba(243,244,247,.42)}
-    input:focus,textarea:focus{border-color:rgba(200,210,255,.26);box-shadow:0 0 0 3px rgba(180,190,255,.09)}
-    button,label{cursor:pointer;user-select:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}
-    button:hover,label:hover{border-color:rgba(230,235,255,.22);box-shadow:0 12px 26px rgba(0,0,0,.40),0 0 0 3px rgba(200,210,255,.06);transform:translateY(-1px)}
+    input:focus,textarea:focus{border-color:rgba(200,210,255,.26); box-shadow:0 0 0 3px rgba(180,190,255,.09)}
+    button,label{cursor:pointer; user-select:none; display:inline-flex; align-items:center; justify-content:center; gap:8px}
+    button:hover,label:hover{border-color:rgba(230,235,255,.22); box-shadow:0 12px 26px rgba(0,0,0,.40),0 0 0 3px rgba(200,210,255,.06); transform:translateY(-1px)}
     button:active,label:active{transform:translateY(1px) scale(.99)}
-    .pillbtn{padding:9px 12px;border-radius:999px;font-size:12px;white-space:nowrap;background:linear-gradient(90deg, rgba(255,255,255,.07), rgba(255,255,255,.03));border-color:rgba(255,255,255,.16);box-shadow:inset 0 1px 0 rgba(255,255,255,.08)}
-    .btn-primary{border-color:rgba(210,220,255,.18);background:linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.04));box-shadow:inset 0 1px 0 rgba(255,255,255,.10)}
-    .mini{flex:0;min-width:190px}
-    .pwwrap{display:flex;gap:12px;flex:1;min-width:260px}
-    .pwwrap input{flex:1;min-width:0}
-    .pwbtn{flex:0;min-width:130px}
-    .filewrap{display:flex;gap:12px;width:100%;align-items:center;flex-wrap:wrap}
-    .filebtn{flex:0 0 auto;min-width:160px}
-    .filemeta{flex:1 1 auto;min-width:240px;padding:13px 14px;border-radius:var(--r);border:1px solid rgba(255,255,255,.10);background:rgba(0,0,0,.22);color:rgba(243,244,247,.78)}
-    .mono{font-variant-ligatures:none;font-feature-settings:"liga" 0;letter-spacing:.15px;word-break:break-word}
-    .toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);background:rgba(0,0,0,.74);border:1px solid rgba(255,255,255,.18);padding:10px 14px;border-radius:12px;font-size:13px;opacity:0;pointer-events:none;transition:opacity .18s ease,transform .18s ease;box-shadow:0 12px 26px var(--shadow);z-index:30}
-    .toast.show{opacity:1;transform:translateX(-50%) translateY(-2px)}
-    .disabled{opacity:.45;pointer-events:none;filter:saturate(.75)}
-    @media (max-width:420px){input,textarea{min-width:0}.mini{min-width:0;flex:1}.pwbtn{min-width:110px}.pwwrap{min-width:0}.filebtn{min-width:140px}}
+    .pillbtn{
+      padding:9px 12px;
+      border-radius:999px;
+      font-size:12px;
+      white-space:nowrap;
+      background:linear-gradient(90deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      border-color:rgba(255,255,255,.16);
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.08)
+    }
+    .btn-primary{
+      border-color:rgba(210,220,255,.18);
+      background:linear-gradient(90deg, rgba(255,255,255,.08), rgba(255,255,255,.04));
+      box-shadow:inset 0 1px 0 rgba(255,255,255,.10)
+    }
+    .mini{flex:0; min-width:190px}
+    .pwwrap{display:flex; gap:12px; flex:1; min-width:260px}
+    .pwwrap input{flex:1; min-width:0}
+    .pwbtn{flex:0; min-width:130px}
+    .filewrap{display:flex; gap:12px; width:100%; align-items:center; flex-wrap:wrap}
+    .filebtn{flex:0 0 auto; min-width:160px}
+    .filemeta{flex:1 1 auto; min-width:240px; padding:13px 14px; border-radius:var(--r); border:1px solid rgba(255,255,255,.10); background:rgba(0,0,0,.22); color:rgba(243,244,247,.78)}
+    .mono{font-variant-ligatures:none; font-feature-settings:"liga" 0; letter-spacing:.15px; word-break:break-word}
+    .toast{
+      position:fixed; left:50%; bottom:22px;
+      transform:translateX(-50%);
+      background:rgba(0,0,0,.74);
+      border:1px solid rgba(255,255,255,.18);
+      padding:10px 14px;
+      border-radius:12px;
+      font-size:13px;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .18s ease,transform .18s ease;
+      box-shadow:0 12px 26px var(--shadow);
+      z-index:30;
+    }
+    .toast.show{opacity:1; transform:translateX(-50%) translateY(-2px)}
+    .disabled{opacity:.45; pointer-events:none; filter:saturate(.75)}
+    .modal{
+      position:fixed; inset:0;
+      display:none;
+      align-items:center; justify-content:center;
+      z-index:40;
+      padding:18px;
+    }
+    .modal.show{display:flex}
+    .modal .backdrop{
+      position:absolute; inset:0;
+      background:rgba(0,0,0,.62);
+      backdrop-filter:blur(6px);
+    }
+    .modal .card{
+      position:relative;
+      width:min(760px, 94vw);
+      border-radius:18px;
+      border:1px solid rgba(255,255,255,.14);
+      background:linear-gradient(180deg, rgba(255,255,255,.055), rgba(0,0,0,.38));
+      box-shadow:0 30px 80px rgba(0,0,0,.70);
+      overflow:hidden;
+    }
+    .modal .content{position:relative; padding:18px}
+    .modal h2{margin:0 0 12px; font-size:15px; letter-spacing:.2px; opacity:.92}
+    .modal textarea{min-height:140px; width:100%; background:rgba(0,0,0,.34); border-color:rgba(255,255,255,.14)}
+    .modal .actions{display:flex; gap:12px; justify-content:flex-end; margin-top:14px; flex-wrap:wrap}
+    .modal .actions button{min-width:130px}
+    @media (max-width:420px){
+      input,textarea{min-width:0}
+      .mini{min-width:0; flex:1}
+      .pwbtn{min-width:110px}
+      .pwwrap{min-width:0}
+      .filebtn{min-width:140px}
+      body{padding:16px 0}
+      .wrap{padding:0 14px 14px}
+      .inner{padding:18px}
+      .two{grid-template-columns:1fr}
+    }
   </style>
 </head>
 <body>
@@ -104,9 +232,36 @@
 
   <div id="toast" class="toast">OK</div>
 
+  <div id="modalPlain" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="backdrop"></div>
+    <div class="card">
+      <div class="content">
+        <h2>Nhập văn bản gốc</h2>
+        <textarea id="modalPlainText" spellcheck="false" placeholder="Nhập nội dung..."></textarea>
+        <div class="actions">
+          <button id="modalPlainCancel">Huỷ</button>
+          <button id="modalPlainOk" class="btn-primary">OK</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="modalOut" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
+    <div class="backdrop"></div>
+    <div class="card">
+      <div class="content">
+        <h2>Kết quả</h2>
+        <textarea id="modalOutText" spellcheck="false" readonly></textarea>
+        <div class="actions">
+          <button id="modalOutCopy">Sao chép</button>
+          <button id="modalOutClose" class="btn-primary">Đóng</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 <script>
   const $ = (id) => document.getElementById(id);
-
   const enc = new TextEncoder();
   const dec = new TextDecoder();
 
@@ -126,9 +281,7 @@
     return u8;
   };
 
-  const b64url = (u8) =>
-    u8ToB64(u8).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
-
+  const b64url = (u8) => u8ToB64(u8).replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');
   const b64urlToU8 = (s) => {
     s = (s || "").replace(/-/g,'+').replace(/_/g,'/');
     s += '='.repeat((4 - (s.length % 4)) % 4);
@@ -166,7 +319,6 @@
     if (SAFE_MODE) {
       $("plain").value = "";
       $("out").value = "";
-      $("pass").value = "";
       $("pass").type = "password";
       $("btnTogglePass").textContent = "HIỆN";
       disableInSafeMode.forEach(id => setDisabled(id, true));
@@ -178,21 +330,109 @@
   }
 
   async function deriveAesKeyFromPass(pass, saltU8, iters) {
-    const passKey = await crypto.subtle.importKey(
-      "raw",
-      enc.encode(pass),
-      { name: "PBKDF2" },
-      false,
-      ["deriveKey"]
-    );
-
+    const passKey = await crypto.subtle.importKey("raw", enc.encode(pass), { name:"PBKDF2" }, false, ["deriveKey"]);
     return crypto.subtle.deriveKey(
-      { name: "PBKDF2", salt: saltU8, iterations: iters, hash: "SHA-256" },
+      { name:"PBKDF2", salt:saltU8, iterations:iters, hash:"SHA-256" },
       passKey,
-      { name: "AES-GCM", length: 256 },
+      { name:"AES-GCM", length:256 },
       false,
-      ["encrypt", "decrypt"]
+      ["encrypt","decrypt"]
     );
+  }
+
+  function modalOpen(id){
+    const m = $(id);
+    m.classList.add("show");
+    m.setAttribute("aria-hidden","false");
+  }
+  function modalClose(id){
+    const m = $(id);
+    m.classList.remove("show");
+    m.setAttribute("aria-hidden","true");
+  }
+
+  function showModalPlain(){
+    return new Promise((resolve) => {
+      const mId = "modalPlain";
+      const m = $(mId);
+      const t = $("modalPlainText");
+      const ok = $("modalPlainOk");
+      const cancel = $("modalPlainCancel");
+      const backdrop = m.querySelector(".backdrop");
+
+      const cleanup = () => {
+        ok.removeEventListener("click", onOk);
+        cancel.removeEventListener("click", onCancel);
+        backdrop.removeEventListener("click", onCancel);
+        document.removeEventListener("keydown", onKey);
+      };
+
+      const finish = (val) => {
+        cleanup();
+        modalClose(mId);
+        resolve(val);
+      };
+
+      const onOk = () => finish((t.value ?? "").trim());
+      const onCancel = () => finish("");
+      const onKey = (e) => {
+        if (e.key === "Escape") onCancel();
+        if ((e.ctrlKey || e.metaKey) && e.key === "Enter") onOk();
+      };
+
+      t.value = "";
+      modalOpen(mId);
+      setTimeout(()=>t.focus(), 40);
+
+      ok.addEventListener("click", onOk);
+      cancel.addEventListener("click", onCancel);
+      backdrop.addEventListener("click", onCancel);
+      document.addEventListener("keydown", onKey);
+    });
+  }
+
+  async function showModalOut(text){
+    const mId = "modalOut";
+    const m = $(mId);
+    const t = $("modalOutText");
+    const close = $("modalOutClose");
+    const copy = $("modalOutCopy");
+    const backdrop = m.querySelector(".backdrop");
+
+    const cleanup = () => {
+      close.removeEventListener("click", onClose);
+      copy.removeEventListener("click", onCopy);
+      backdrop.removeEventListener("click", onClose);
+      document.removeEventListener("keydown", onKey);
+    };
+
+    const onClose = () => { cleanup(); modalClose(mId); };
+    const onKey = (e) => { if (e.key === "Escape") onClose(); };
+
+    const onCopy = async () => {
+      try{
+        await navigator.clipboard.writeText(text || "");
+        toast("Đã sao chép");
+      }catch{
+        t.focus(); t.select();
+        document.execCommand("copy");
+        toast("Đã sao chép");
+      }
+    };
+
+    t.value = text || "";
+    modalOpen(mId);
+    setTimeout(()=>t.focus(), 40);
+
+    close.addEventListener("click", onClose);
+    copy.addEventListener("click", onCopy);
+    backdrop.addEventListener("click", onClose);
+    document.addEventListener("keydown", onKey);
+  }
+
+  async function getPlaintextForEncrypt(){
+    if (!SAFE_MODE) return ($("plain").value || "").trim();
+    return await showModalPlain();
   }
 
   function clearSensitiveAfterUse(){
@@ -200,9 +440,9 @@
     if (SAFE_MODE) $("plain").value = "";
   }
 
-  async function encryptText() {
-    try {
-      const plain = ($("plain").value || "").trim();
+  async function encryptText(){
+    try{
+      const plain = await getPlaintextForEncrypt();
       const pass = $("pass").value;
 
       if (!plain) throw new Error("Bạn chưa nhập văn bản gốc.");
@@ -215,7 +455,7 @@
       const aesKey = await deriveAesKeyFromPass(pass, salt, iters);
 
       const ctAll = new Uint8Array(await crypto.subtle.encrypt(
-        { name: "AES-GCM", iv: nonce },
+        { name:"AES-GCM", iv: nonce },
         aesKey,
         enc.encode(plain)
       ));
@@ -226,8 +466,8 @@
       $("token").value = `v3.${iters}.${b64url(salt)}.${b64url(nonce)}.${b64url(ciphertext)}.${b64url(tag)}`;
 
       clearSensitiveAfterUse();
-      toast("Đã mã hoá văn bản");
-    } catch (e) {
+      toast("Đã mã hoá");
+    }catch(e){
       toast("Có lỗi");
       if (!SAFE_MODE) $("out").value = "Mã hoá thất bại: " + (e?.message || e);
     }
@@ -243,13 +483,13 @@
       $("filemeta").textContent = "Chưa chọn file";
       return;
     }
-    const kb = (SELECTED_FILE.size / 1024);
+    const kb = SELECTED_FILE.size / 1024;
     const s = kb < 1024 ? `${kb.toFixed(1)} KB` : `${(kb/1024).toFixed(2)} MB`;
     $("filemeta").textContent = `${SELECTED_FILE.name} • ${s} • ${SELECTED_FILE.type || "application/octet-stream"}`;
   });
 
-  async function encryptFile() {
-    try {
+  async function encryptFile(){
+    try{
       if (!SELECTED_FILE) throw new Error("Bạn chưa chọn file.");
       const pass = $("pass").value;
       if (!pass || pass.length < 10) throw new Error("Mật khẩu quá yếu.");
@@ -275,19 +515,18 @@
       const nameB64 = strToB64url(SELECTED_FILE.name);
       const mimeB64 = strToB64url(SELECTED_FILE.type || "application/octet-stream");
 
-      $("token").value =
-        `v3f.${iters}.${b64url(salt)}.${b64url(nonce)}.${nameB64}.${mimeB64}.${b64url(ciphertext)}.${b64url(tag)}`;
+      $("token").value = `v3f.${iters}.${b64url(salt)}.${b64url(nonce)}.${nameB64}.${mimeB64}.${b64url(ciphertext)}.${b64url(tag)}`;
 
       clearSensitiveAfterUse();
       toast("Đã mã hoá file");
-    } catch (e) {
+    }catch(e){
       toast("Có lỗi");
       if (!SAFE_MODE) $("out").value = "Mã hoá file thất bại: " + (e?.message || e);
     }
   }
 
-  async function decryptAny() {
-    try {
+  async function decryptAny(){
+    try{
       const pass = ($("pass").value || "").trim();
       const token = ($("token").value || "").trim();
 
@@ -321,12 +560,17 @@
         ));
 
         const text = dec.decode(pt);
-        if (SAFE_MODE) { $("out").value = ""; alert(text); }
-        else $("out").value = text;
-
         LAST_DECRYPTED_FILE = null;
+
+        if (SAFE_MODE) {
+          $("out").value = "";
+          await showModalOut(text);
+        } else {
+          $("out").value = text;
+        }
+
         clearSensitiveAfterUse();
-        toast("Đã giải mã văn bản");
+        toast("Đã giải mã");
         return;
       }
 
@@ -356,8 +600,14 @@
         ));
 
         LAST_DECRYPTED_FILE = { name: fileName || "file.bin", mime: mime || "application/octet-stream", bytes: pt };
-        if (!SAFE_MODE) $("out").value = `Đã giải mã file: ${LAST_DECRYPTED_FILE.name} (${LAST_DECRYPTED_FILE.bytes.length} bytes)`;
-        else { $("out").value = ""; alert(`Đã giải mã file: ${LAST_DECRYPTED_FILE.name}`); }
+
+        const msg = `Đã giải mã file: ${LAST_DECRYPTED_FILE.name} (${LAST_DECRYPTED_FILE.bytes.length} bytes)`;
+        if (SAFE_MODE) {
+          $("out").value = "";
+          await showModalOut(msg);
+        } else {
+          $("out").value = msg;
+        }
 
         clearSensitiveAfterUse();
         toast("Đã giải mã file");
@@ -365,7 +615,7 @@
       }
 
       throw new Error("Token không hỗ trợ (chỉ v3 hoặc v3f).");
-    } catch (e) {
+    }catch(e){
       toast("Có lỗi");
       if (!SAFE_MODE) $("out").value = "Giải mã thất bại: " + (e?.message || e);
       LAST_DECRYPTED_FILE = null;
